@@ -22,7 +22,7 @@ use csci467;
 """
 
 
-class Parts(Base):
+class LegacyParts(Base):
     __tablename__ = "parts"
 
     number: Mapped[int] = mapped_column(primary_key=True)
@@ -53,12 +53,11 @@ legacy db in this file.
 """
 
 
-
 if __name__ == '__main__':
 
     # Basic connection works
     with Session(ENGINE) as session:
-        query = Select(Parts)
+        query = Select(LegacyParts)
         res = session.execute(query)
         count = 0
         for row in res.scalars().all():
@@ -68,7 +67,7 @@ if __name__ == '__main__':
         print(type(query))
         print(f"First db found {count} parts.")
 
-    for a in ask_legacy(Select(Parts).filter(Parts.price >= 100)):
+    for a in ask_legacy(Select(LegacyParts).filter(LegacyParts.price >= 100)):
         print(a)
 
 
