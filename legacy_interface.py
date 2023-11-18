@@ -46,6 +46,10 @@ def ask_legacy(query: Select):
         return s.execute(query).scalars().all()
 
 
+def debug_sql_query(query: Select):
+    return f"DEBUG: [\n{query.compile(compile_kwargs={'literal_binds': True})}\n]"
+
+
 """
 TODO:
 Add some extra helper funtions to interact with the legacy database. Ideally we could contain all custom sql for the
@@ -65,12 +69,18 @@ if __name__ == '__main__':
             count += 1
         print(type(res.scalars().all()))
         print(type(query))
+        # print(type(res))
+        # print(type(res.scalars().all()))
         print(f"First db found {count} parts.")
 
     for a in ask_legacy(Select(LegacyParts).filter(LegacyParts.price >= 100)):
-        print(a)
+        # print(a)
+        pass
 
-
+    temp = Select(LegacyParts).filter(LegacyParts.price >= 100)
+    print(debug_sql_query(temp))
+    # print(temp.compile(compile_kwargs={"literal_binds": True}))
+    # print(temp.compile())
 
 
 
