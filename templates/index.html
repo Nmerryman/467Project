@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Parts</h1>
+    <ul>
+    {% for item in data %}
+        <li>{{ item.number }}: {{ item.description }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
