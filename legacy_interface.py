@@ -74,7 +74,7 @@ if __name__ == '__main__':
         print(f"First db found {count} parts.")
 
     for a in ask_legacy(Select(LegacyParts).filter(LegacyParts.price >= 100)):
-        # print(a)
+        print(a)
         pass
 
     temp = Select(LegacyParts).filter(LegacyParts.price >= 100)
