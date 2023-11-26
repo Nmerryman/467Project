@@ -125,6 +125,12 @@ def full_table(table: Base):
         return session.execute(query).scalars().all()
 
 
+def _from_id(table: Base, id_num: int):
+    with Session(ENGINE) as session:
+        query = select(table).where(table.id == id_num)
+        return session.execute(query).scalar()
+
+
 def customer_new(name: str, email: str, addr1: str, addr2: str) -> int:
     with Session(ENGINE) as session:
         cust = Customer(name=name, email=email, address1=addr1, address2=addr2)
@@ -134,17 +140,17 @@ def customer_new(name: str, email: str, addr1: str, addr2: str) -> int:
 
 
 def customer_from_id(cust_id: int):
-    with Session(ENGINE) as session:
-        query = select(Customer).where(Customer.id == cust_id)
-        return session.execute(query).scalar()
+    return _from_id(Customer, cust_id)
 
 
-def customer_update(cust_id: int, name: str, email: str, addr1: str, addr2: str):
+def customer_update(cust_id: int, **kwargs):
+    """
+    To set wkargs, simply call customer_update(10, name="newname")
+    """
     with Session(ENGINE) as session:
-        query = update(Customer).where(Customer.id == cust_id).values(name=name, email=email, address1=addr1, address2=addr2)
+        query = update(Customer).where(Customer.id == cust_id).values(**kwargs)
         session.execute(query)
         session.commit()
-
 
 
 def order_new(cust_id: int, status: str, pricing_m_id: int, created: datetime, finished=None, calc_cost=0.0):
@@ -156,14 +162,12 @@ def order_new(cust_id: int, status: str, pricing_m_id: int, created: datetime, f
 
 
 def order_from_id(order_id: int):
-    with Session(ENGINE) as session:
-        query = select(Order).where(Order.id == order_id)
-        return session.execute(query).scalar()
+    return _from_id(Order, order_id)
 
 
-def order_update(order_id: int, cust_id: int, status: str, pricing_m_id: int, created: datetime, finished=None, calc_cost=0.0):
+def order_update(order_id: int, **kwargs):
     with Session(ENGINE) as session:
-        query = update(Order).where(Order.id == order_id).values(customer_id=cust_id, status=status, created=created, finished=finished, pricing_model_id=pricing_m_id, calculated_cost=calc_cost)
+        query = update(Order).where(Order.id == order_id).values(**kwargs)
         session.execute(query)
         session.commit()
 
@@ -177,14 +181,12 @@ def order_item_new(order_id: int, item_id: int, quantity: int, status: str, cost
 
 
 def order_item_from_id(oi_id: int):
-    with Session(ENGINE) as session:
-        query = select(OrderItem).where(OrderItem.id == oi_id)
-        return session.execute(query).scalar()
+    return _from_id(OrderItem, oi_id)
 
 
-def order_item_update(oi_id: int, order_id: int, item_id: int, quantity: int, status: str, cost: float):
+def order_item_update(oi_id: int, **kwargs):
     with Session(ENGINE) as session:
-        query = update(OrderItem).where(OrderItem.id == oi_id).values(order_id=order_id, item_id=item_id, quantity=quantity, status=status, cost=cost)
+        query = update(OrderItem).where(OrderItem.id == oi_id).values(**kwargs)
         session.execute(query)
         session.commit()
 
@@ -198,14 +200,12 @@ def inventory_new(legacy_id: int, stock: int = 0):
 
 
 def inventory_from_id(i_id: int):
-    with Session(ENGINE) as session:
-        query = select(Inventory).where(Inventory.id == i_id)
-        return session.execute(query).scalar()
+    return _from_id(Inventory, i_id)
 
 
-def inventory_update(i_id: int, legacy_id: int, stock: int = 0):
+def inventory_update(i_id: int, **kwargs):
     with Session(ENGINE) as session:
-        query = update(Inventory).where(Inventory.id == i_id).values(legacy_id=legacy_id, stock=stock)
+        query = update(Inventory).where(Inventory.id == i_id).values(**kwargs)
         session.execute(query)
         session.commit()
 
@@ -219,14 +219,12 @@ def fee_bracket_new(name: str, min_weight: float = None, max_weight: float = Non
 
 
 def fee_bracket_from_id(fb_id: int):
-    with Session(ENGINE) as session:
-        query = select(FeeBrackets).where(FeeBrackets.id == fb_id)
-        return session.execute(query).scalar()
+    return _from_id(FeeBrackets, fb_id)
 
 
-def fee_bracket_update(fb_id: int, name: str, min_weight: float = None, max_weight: float = None):
+def fee_bracket_update(fb_id: int, **kwargs):
     with Session(ENGINE) as session:
-        query = update(FeeBrackets).where(FeeBrackets.id == fb_id).values(name=name, min_weight=min_weight, max_weight=max_weight)
+        query = update(FeeBrackets).where(FeeBrackets.id == fb_id).values(**kwargs)
 
 
 
@@ -239,19 +237,14 @@ def fee_new(description: str, bracket_id: int, base_charge: float, weight_m: flo
 
 
 def fee_from_id(f_id: int):
-    with Session(ENGINE) as session:
-        query = select(Fees).where(Fees.id == f_id)
-        return session.execute(query).scalar()
-    
+    return _from_id(Fees, f_id)
 
-def fee_update(f_id: int, description: str, bracket_id: int, base_charge: float, weight_m: float, weight_b: float):
+
+def fee_update(f_id: int, **kwargs):
     with Session(ENGINE) as session:
-        query = update(Fees).where(Fees.id == f_id).values(description=description, bracket_id=bracket_id, base_charge=base_charge, weight_m=weight_m, weight_b=weight_b)
+        query = update(Fees).where(Fees.id == f_id).values(**kwargs)
         session.execute(query)
         session.commit()
-
-
-
 
 
 def main():
