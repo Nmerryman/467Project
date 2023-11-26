@@ -47,6 +47,7 @@ def ask_legacy(query: Select):
 
 
 def debug_sql_query(query: Select):
+    # This just prints out the generated sql query. Text has been inserted because it's not supposed to be directly used.
     return f"DEBUG: [\n{query.compile(compile_kwargs={'literal_binds': True})}\n]"
 
 
