@@ -6,7 +6,7 @@ from sqlalchemy import String, Integer, ForeignKey
 from typing import List, Optional
 from datetime import datetime
 
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 
 import legacy_interface
 
@@ -22,6 +22,10 @@ class Customer(Base):                   # Currently only stores information need
     email: Mapped[str]                  # Email
     address1: Mapped[str]               # Client street address
     address2: Mapped[str]               # Client city/state
+
+    def __repr__(self):
+        return f"Customer[{self.id}](name={self.name}, email={self.email}: addr1={self.address1} addr2={self.address2})"
+
 
 
 class Order(Base):                                                                  # Source of the order invoice
@@ -100,10 +104,25 @@ def sec(statement, commit=True):
     return res
 
 
+def new_customer(name: str, email: str, addr1: str, addr2: str) -> int:
+    with Session(ENGINE) as session:
+        cust = Customer(name=name, email=email, address1=addr1, address2=addr2)
+        session.add(cust)
+        session.commit()
+        return cust.id
+
+def customer_from_id(cust_id: int):
+    with Session(ENGINE) as session:
+        query = select(Customer).where(Customer.id == cust_id)
+        return session.execute(query).scalar()
+
+
+
 def main():
     # gen_dev_customer()
-    stmt = insert(Customer).values(name="a", email="B", address1="1", address2="2")
-    sec(stmt)
+    # stmt = insert(Customer).values(name="a", email="B", address1="1", address2="2")
+    # sec(stmt)
+    print(new_customer("a", "b", "c", "d"))
 
 
 
