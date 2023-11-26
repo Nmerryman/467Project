@@ -77,7 +77,7 @@ def add_fees():
     Base.metadata.create_all(ENGINE)
 
     for _ in range(gen_counts["Fees"]):
-        stmt = insert(Fees).values(description=fake.text()[0:100], bracket=random.randint(1, gen_counts["FeeBrackets"]),
+        stmt = insert(Fees).values(description=fake.text()[0:100], bracket_id=random.randint(1, gen_counts["FeeBrackets"]),
                                    base_charge=random.random()*500, weight_m=random.random()*50,
                                    weight_b=random.random()*50)
         sec(stmt)
