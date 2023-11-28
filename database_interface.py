@@ -27,7 +27,6 @@ class Customer(Base):                   # Currently only stores information need
         return f"Customer[{self.id}](name={self.name}, email={self.email}: addr1={self.address1} addr2={self.address2})"
 
 
-
 class Order(Base):                                                                  # Source of the order invoice
     __tablename__ = "orders"
 
@@ -81,6 +80,8 @@ class FeeBrackets(Base):
     name: Mapped[str]                               # Bracket info
     min_weight: Mapped[Optional[float]]             # Min and max weights for the current bracket type
     max_weight: Mapped[Optional[float]]
+    base_charge: Mapped[float]                      # Base bracket charge
+
 
 
 class Fees(Base):
@@ -89,7 +90,6 @@ class Fees(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     description: Mapped[str]                                                # Helper text (maybe delete and just use fees.bracket?)
     bracket_id: Mapped[int] = mapped_column(ForeignKey("fee_brackets.id"))     # What bracket do we use to properly apply our fees
-    base_charge: Mapped[float]                                              # Base order charge  FIXME consider moving this one to the FeeBrackets
     weight_m: Mapped[float]                                                 # These parameters follow the y = mx + b pattern
     weight_b: Mapped[float]
     
