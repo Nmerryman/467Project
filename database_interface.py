@@ -35,8 +35,9 @@ class Order(Base):                                                              
     status: Mapped[str]                                                     # Something like [received, awaiting_stock, in_progress, shipped]
     created: Mapped[datetime]                                               # When was the order received
     finished: Mapped[Optional[datetime]]                                    # When was the order completed
-    pricing_model_id: Mapped[int] = mapped_column(ForeignKey("fees.id"))
-    calculated_cost: Mapped[float]                                          # Just store the calculated cost for ease
+    pricing_model_id: Mapped[Optional[int]] = mapped_column(ForeignKey("fees.id"))
+    total_weight: Mapped[Optional[float]]
+    calculated_cost: Mapped[Optional[float]]                                          # Just store the calculated cost for ease
 
     customer: Mapped[Customer] = relationship(lazy="joined")
     pricing_model: Mapped["Fees"] = relationship(lazy="joined")
@@ -53,7 +54,8 @@ class OrderItem(Base):                                                  # Each i
     item_id: Mapped[int] = mapped_column(ForeignKey("inventory.id"))
     quantity: Mapped[int]                                               # Num of items in the order
     status: Mapped[str]                                                 # Status such as [missing_stock, collecting, ready]
-    cost: Mapped[float]                                                 # Store a precalculated value for cost
+    cost: Mapped[Optional[float]]                                       # Store a precalculated value for cost
+    weight: Mapped[Optional[float]]
 
     order: Mapped[Order] = relationship(lazy="joined")
     item: Mapped["Inventory"] = relationship(lazy="joined")
@@ -78,8 +80,8 @@ class FeeBrackets(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]                               # Bracket info
-    min_weight: Mapped[Optional[float]]             # Min and max weights for the current bracket type
-    max_weight: Mapped[Optional[float]]
+    min_weight: Mapped[float]                       # Min and max weights for the current bracket type
+    max_weight: Mapped[float]
     base_charge: Mapped[float]                      # Base bracket charge
 
 
