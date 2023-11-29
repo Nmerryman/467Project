@@ -74,8 +74,17 @@ if __name__ == '__main__':
         print(f"First db found {count} parts.")
 
     for a in ask_legacy(Select(LegacyParts).filter(LegacyParts.price >= 100)):
-        print(a)
+        #print(a)
         pass
+
+     # Query to fetch all LegacyParts entries
+    query = Select(LegacyParts)
+    res = session.execute(query)
+
+    # Iterate over each LegacyParts entry and print the number
+    for row in res.scalars().all():
+        print(f'Legacy ID: {row.number}')
+        
 
     temp = Select(LegacyParts).filter(LegacyParts.price >= 100)
     print(debug_sql_query(temp))

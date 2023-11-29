@@ -105,8 +105,6 @@ def main():
     stmt = insert(Customer).values(name="a", email="B", address1="1", address2="2")
     sec(stmt)
 
-
-
 if __name__ == '__main__':
     main()
 

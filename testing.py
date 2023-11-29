@@ -95,7 +95,6 @@ def add_inventory():
 
     print("Added Inventory")
 
-
 def add_order():
     Base.metadata.drop_all(ENGINE, tables=[Order.__table__])
     Base.metadata.create_all(ENGINE)
@@ -122,6 +121,20 @@ def add_order_item():
 
     print("Added OrderItems")
 
+def get_combined_data():
+    # Create a new session
+    with Session(ENGINE) as session:
+        # Perform a join operation between Inventory and LegacyParts
+        # Replace 'LegacyParts' with the actual name of your LegacyParts class
+        # Replace 'legacy_id' and 'id' with the actual names of your foreign key and primary key
+        data = session.query(Inventory, LegacyParts).join(LegacyParts, Inventory.legacy_id == LegacyParts.number).all()
+        print(str(session.query(Inventory, LegacyParts).join(LegacyParts, Inventory.legacy_id == LegacyParts.number)))
+        # Close the session
+        session.close()
+
+    return data
+
+
 
 def gen_tables():
     # Just do all at once in order
@@ -135,5 +148,8 @@ def gen_tables():
     add_order_item()
 
 
+
 if __name__ == '__main__':
-    gen_tables()
+    #gen_tables()
+    drop_tables()
+    make_tables()

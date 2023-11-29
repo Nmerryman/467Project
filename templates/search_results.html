@@ -1,0 +1,17 @@
+{% for part in data %}
+  <div class="box">
+    <img src="{{ part.pictureURL }}" alt="Part Image">
+    <div>
+      <p>{{ part.description }}</p>
+      <p>Price: ${{ part.price }}</p>
+      <p>Weight: {{ part.weight }} lbs</p>
+      <p>available: {{ part.stock }}</p>
+    </div>
+    <!-- Lines for the quantity input and add to cart button -->
+    <div class="cart-elements">
+      <label for="quantity">Quantity:</label>
+      <input class="quantity-input" type="number" min="1" value="1" placeholder="Enter Quantity">
+      <button class="add-to-cart">Add to Cart</button>
+    </div>
+  </div>
+{% endfor %}

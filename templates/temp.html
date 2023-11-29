@@ -40,19 +40,41 @@
 
 /* Added this style for cart elemenets */
 .box .cart-elements {
-    margin-left: 150px;
+    margin-left: -400px; /* this is to space the cart-elements after the box class */
+    display: flex;
+    align-items: center;
 } 
+
+.box div {
+  flex: 1;
+}
 </style>
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script>
+function handleSearch(event) {
+  var query = event.target.value;
+
+  // Featch search results and update the page
+  fetcher('search','container', [query], function() {
+     // This callback function will be called after the page is updated
+     console.log('Page updated with search results for query:', query);
+  });
+  // TODO: Use the query to search your data and update the page
+  console.log('Search query:', query);
+}
+</script>
 </head>
 <body>
 
 <div class="banner">
     <h1>Car Parts Store</h1>
     <button onclick="location.href='/productList'">Product List</button>
-    <button onclick="location.href='cart.html'">Cart</button>
+    <button onclick="location.href='/cart.html'">Cart</button>
 </div>
 
-<div class="container">
+<input class="search-bar" type="search" oninput="handleSearch(event)" placeholder="Enter car part">
+
+<div id="container">
 {% for part in data %}
   <div class="box">
     <img src="{{ part.pictureURL }}" alt="Part Image">
@@ -74,5 +96,3 @@
 
 </body>
 </html>
-
-
