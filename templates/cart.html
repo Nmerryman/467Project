@@ -1,10 +1,27 @@
-{% extends 'base.html' %}
+<html>
+<style>
+  .banner {
+    background-color: green;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 17px;
+}
 
+.banner button {
+    text-align: center;
+    font-size: 20px;
+    margin-left: 125em;
+    height: 45px;
+    width: 100px;
+}
+</style>
 
-{% block title %}
-<h1>Shopping Cart</h1>
-{% endblock %}
-
+<body style="background-color:gray">
+<div class="banner">
+  <button style="font-size: 14px;" onclick="location.href='/store_front'">Continue Shopping</button>
+  <h1>Shopping Cart</h1>
+</div>
 
 {% block content %}
   <div id="container">
@@ -27,3 +44,5 @@
     {% endfor %}
   </div>
 {% endblock %}
+</body>
+</html>
