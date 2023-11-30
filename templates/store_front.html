@@ -78,7 +78,8 @@ function handleSearch(event) {
 </div>
 
 <p></p>
-<input style="margin-left:10px" class="search-bar" type="search" oninput="handleSearch(event)" placeholder="Enter car part">
+<label style="margin-left:12px"for="search-bar">Search by Description: </label>
+<input style="margin-left:5px" class="search-bar" type="search" oninput="handleSearch(event)" placeholder="Search">
 
 <div id="container">
 {% for part in data %}

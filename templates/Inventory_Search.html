@@ -1,5 +1,3 @@
-<p style="margin-left:12px">Search Results:</p> <!--Placeholder // Replace with function to print respective message if no results or all results-->
-
 {% for part in data %}
   <div class="box">
     <img src="{{ part.pictureURL }}" alt="Part Image">
@@ -12,8 +10,8 @@
     <!-- Lines for the quantity input and add to cart button -->
     <div class="cart-elements">
       <label style="margin-right:5px"for="quantity">Quantity:</label>
-      <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" placeholder="Enter #">
-      <button class="add-to-cart">Add to Cart</button>
+      <input style="margin-right:5px" type="number" oninput="handleInput()" class="Quantity" name="Quantity" min="1" placeholder="Enter #">
+      <button class="updateButton" disabled>Update Quantity</button>
     </div>
   </div>
 {% endfor %}
