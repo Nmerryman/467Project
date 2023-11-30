@@ -23,8 +23,8 @@
     </div>
     <!-- Lines for the quantity input and remove from cart button -->
     <div class="cart-elements">
-      <label for="quantity">Quantity:</label>
-      <input class="quantity-input" type="number" min="1" value="1" placeholder="Enter Quantity">
+      <label style="margin-right:5px"for="quantity">Quantity:</label>
+      <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" max="10" placeholder="Enter #">
       <button class="remove-from-cart" onclick="location.href='/remove_from_cart/{{ item.number }}'">Remove from Cart</button>
     </div>
   </div>
