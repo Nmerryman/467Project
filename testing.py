@@ -7,7 +7,7 @@ from sqlalchemy import Select
 
 fake = faker.Faker()
 
-gen_counts = {"Customers": 50, "FeeBrackets": 400, "Fees": 30, "Inventory": 50, "OrderItem": 100, "Order": 10}
+gen_counts = {"Customers": 50, "Fees": 3, "Inventory": 50, "OrderItem": 100, "Order": 10}
 status_options = ["pre", "in", "post"]
 
 
@@ -57,37 +57,21 @@ def add_customer():
     print("Added Customers")
 
 
-def add_fee_bracket():
-    # Clear the table because we don't really want to randomly generate extra rows
-    Base.metadata.drop_all(ENGINE, tables=[FeeBrackets.__table__])
-    Base.metadata.create_all(ENGINE)
-
-    steps = gen_counts["FeeBrackets"]
-    size = 50
-    start = 0
-    after = random.random() * size
-
-    with Session(ENGINE) as session:
-        for a in range(steps):
-            fb = FeeBrackets(name=f"Step: {a}", min_weight=start, max_weight=after, base_charge=random.random()*500)
-            session.add(fb)
-
-            start = after
-            after = random.random() * size + start
-        session.commit()
-
-    print("Added FeeBrackets")
-
-
 def add_fees():
     Base.metadata.drop_all(ENGINE, tables=[Fees.__table__])
     Base.metadata.create_all(ENGINE)
 
+    size = 50
+    start = 0
+    after = random.random() * size
     with Session(ENGINE) as session:
         for _ in range(gen_counts["Fees"]):
-            f = Fees(description=fake.text()[0:100], bracket_id=random.randint(1, gen_counts["FeeBrackets"]),
-                                       weight_m=random.random()*50, weight_b=random.random()*50)
+            f = Fees(name=fake.text()[0:100], weight_m=random.random()*50, weight_b=random.random()*50, min_weight=start, max_weight=after)
             session.add(f)
+
+            start = after
+            after += random.random() * size
+            
         session.commit()
 
     print("Added Fees")
@@ -115,7 +99,7 @@ def add_order():
             finished_date = fake.date_time_between(start_date="now", end_date="+1y") if random.random() > 0.5 else None
             order = Order(customer_id=random.randint(1, gen_counts["Customers"]), status=random.choice(status_options),
                                         created=fake.date_time_between(start_date="-1y", end_date="now"), finished=finished_date,
-                                        pricing_model_id=random.randint(1, gen_counts["Fees"]), calculated_cost=random.random() * 20_000)
+                                        fee_id=random.randint(1, gen_counts["Fees"]), total_cost=random.random() * 20_000)
             sesison.add(order)
         sesison.commit()
 
@@ -142,7 +126,6 @@ def gen_tables():
     drop_tables()
     make_tables()
     add_customer()
-    add_fee_bracket()
     add_fees()
     add_inventory()
     add_order()

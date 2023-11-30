@@ -27,17 +27,10 @@ def build_db():
             temp_inventory = Inventory(legacy_id=a.number, stock=0 if random.random() > .5 else random.randint(0, 500))
             session.add(temp_inventory)
 
-        # Add reasonable fee brackets
-        session.add(FeeBrackets(name="Light", min_weight=0, max_weight=10, base_charge=10))
-        session.add(FeeBrackets(name="Medium", min_weight=10, max_weight=50, base_charge=20))
-        session.add(FeeBrackets(name="Heavy", min_weight=50, max_weight=100, base_charge=30))
-        session.add(FeeBrackets(name="Extra Heavy", min_weight=100, max_weight=1000, base_charge=50))
-
         # Add Fee styles for each weight
-        session.add(Fees(description="Standard packing", bracket_id=1, weight_m=3, weight_b=0))
-        session.add(Fees(description="Standard packing", bracket_id=2, weight_m=3, weight_b=0))
-        session.add(Fees(description="Standard packing", bracket_id=3, weight_m=3, weight_b=0))
-        session.add(Fees(description="Standard packing", bracket_id=4, weight_m=3, weight_b=0))
+        session.add(Fees(name="Light packing", weight_m=3, weight_b=10, min_weight=0, max_weight=50))
+        session.add(Fees(name="Standard packing", weight_m=3, weight_b=20, min_weight=50, max_weight=100))
+        session.add(Fees(name="Heavy packing", weight_m=3, weight_b=30, min_weight=100, max_weight=1000))
 
         # Add old customers
         for _ in range(4):

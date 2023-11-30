@@ -35,15 +35,15 @@ class Order(Base):                                                              
     status: Mapped[str]                                                     # Something like [received, awaiting_stock, in_progress, shipped]
     created: Mapped[datetime]                                               # When was the order received
     finished: Mapped[Optional[datetime]]                                    # When was the order completed
-    pricing_model_id: Mapped[Optional[int]] = mapped_column(ForeignKey("fees.id"))
+    fee_id: Mapped[Optional[int]] = mapped_column(ForeignKey("fees.id"))
     total_weight: Mapped[Optional[float]]
-    calculated_cost: Mapped[Optional[float]]                                          # Just store the calculated cost for ease
+    total_cost: Mapped[Optional[float]]                                          # Just store the calculated cost for ease
 
     customer: Mapped[Customer] = relationship(lazy="joined")
     pricing_model: Mapped["Fees"] = relationship(lazy="joined")
 
     def __repr__(self) -> str:
-        return f"Order[{self.id}](cust_id={self.customer_id}, status={self.status}, created={self.created}, finished={self.finished}, pricing_id={self.pricing_model_id}, calc_cost={self.calculated_cost})"
+        return f"Order[{self.id}](cust_id={self.customer_id}, status={self.status}, created={self.created}, finished={self.finished}, pricing_id={self.fee_id}, (${self.total_cost}, {self.total_weight}lb) )"
 
 
 class OrderItem(Base):                                                  # Each item included in an order
@@ -75,27 +75,15 @@ class Inventory(Base):                                              # Stores cur
         return f"Inventory[{self.id}](legacy_id={self.legacy_id}, stock={self.stock})"
 
 
-class FeeBrackets(Base):
-    __tablename__ = "fee_brackets"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str]                               # Bracket info
-    min_weight: Mapped[float]                       # Min and max weights for the current bracket type
-    max_weight: Mapped[float]
-    base_charge: Mapped[float]                      # Base bracket charge
-
-
-
 class Fees(Base):
     __tablename__ = "fees"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    description: Mapped[str]                                                # Helper text (maybe delete and just use fees.bracket?)
-    bracket_id: Mapped[int] = mapped_column(ForeignKey("fee_brackets.id"))     # What bracket do we use to properly apply our fees
+    name: Mapped[str]                                                # Helper text (maybe delete and just use fees.bracket?)
     weight_m: Mapped[float]                                                 # These parameters follow the y = mx + b pattern
     weight_b: Mapped[float]
-    
-    bracket: Mapped[FeeBrackets] = relationship(lazy="joined")
+    min_weight: Mapped[float]
+    max_weight: Mapped[float]
 
 
 ENGINE = create_engine("sqlite:///test.db")
@@ -212,27 +200,9 @@ def inventory_update(i_id: int, **kwargs):
         session.commit()
 
 
-def fee_bracket_new(name: str, min_weight: float = None, max_weight: float = None):
+def fee_new(name: str, bracket_id: int, base_charge: float, weight_m: float, weight_b: float, min_w: float, max_w: float):
     with Session(ENGINE) as session:
-        bracket = FeeBrackets(name=name, min_weight=min_weight, max_weight=max_weight)
-        session.add(bracket)
-        session.commit()
-        return bracket.id
-
-
-def fee_bracket_from_id(fb_id: int):
-    return _from_id(FeeBrackets, fb_id)
-
-
-def fee_bracket_update(fb_id: int, **kwargs):
-    with Session(ENGINE) as session:
-        query = update(FeeBrackets).where(FeeBrackets.id == fb_id).values(**kwargs)
-
-
-
-def fee_new(description: str, bracket_id: int, base_charge: float, weight_m: float, weight_b: float):
-    with Session(ENGINE) as session:
-        fee = Fees(description=description, bracket_id=bracket_id, base_charge=base_charge, weight_m=weight_m, weight_b=weight_b)
+        fee = Fees(name=name, bracket_id=bracket_id, base_charge=base_charge, weight_m=weight_m, weight_b=weight_b, min_weight=min_w, max_weight=max_w)
         session.add(fee)
         session.commit()
         return fee.id
