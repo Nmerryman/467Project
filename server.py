@@ -44,29 +44,6 @@ def search():
     # Render the HTML template and pass the search results to it
     return render_template('search_results.html', data=s_res)
 
-
-@app.route("/search_results")
-def searchInv_results():
-    # Get your data (replace this with your actual data fetching code)
-    data = ask_legacy(select(LegacyParts))
-
-    # Render the HTML template and pass the data to it
-    return render_template('Inventory_Search.html', data=data)
-
-@app.route("/search_inventory")
-def search_inv():
-    # Get the search query from the request arguments
-    query = request.args.get('arg0') # get key for search term to look up in query
-
-    s_res = perform_search(query)
- 
-    # Print the search results to the console
-    for item in s_res:
-        print(f'Part Number: {item.number}, Part Name: {item.description}, Stock: {item.stock}')
-
-    # Render the HTML template and pass the search results to it
-    return render_template('Inventory_Search.html', data=s_res)
-
 def perform_search(query):
     # Get all data (replace this with your actual data fetching code)
     all_data = post_scalars(ask_legacy(select(LegacyParts)))
@@ -86,6 +63,7 @@ def perform_search(query):
             item.stock = inventory_record.stock
 
     return s_res
+
 
 
 @app.route('/cart')
