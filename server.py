@@ -46,20 +46,23 @@ def search():
 
 def perform_search(query):
     # Get all data (replace this with your actual data fetching code)
-    all_data = ask_legacy(select(LegacyParts))
+    all_data = post_scalars(ask_legacy(select(LegacyParts)))
 
     # Filter the data based on the query
     # searches for item in all all_data, and if the item is found within item.description, that item is
     # added to the search results. lower() is to make it case insensitive.
-    search_results = [item for item in all_data if query.lower() in item.description.lower()]
+    s_res = list()
+    for item in all_data:
+        if query.lower() in item.description.lower():
+            s_res.append(item)
 
     # Get inventory data for each search result
-    for item in search_results:
+    for item in s_res:
         inventory_record = inventory_from_legacy_id(item.number)
         if inventory_record is not None:
             item.stock = inventory_record.stock
 
-    return search_results
+    return s_res
 
 
 @app.route('/cart')
