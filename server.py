@@ -71,6 +71,11 @@ def cart_elements():
     data = ask_legacy(select(LegacyParts))
     return render_template('cart.html', data=data)
 
+@app.route('/add_inventory')
+def add_inventory():
+    data = get_data_with_inventory()
+    return render_template('inventory_add.html', data=data)
+
 
 def get_data_with_inventory():
     # Get all data (replace this with your actual data fetching code)
