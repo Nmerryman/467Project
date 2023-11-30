@@ -196,6 +196,15 @@ def inventory_from_id(i_id: int):
     return _from_id(Inventory, i_id)
 
 
+def inventory_from_legacy_id(legacy_id: int):
+    """
+    Fetch inventory record for a specific legacy_id.
+    """
+    with Session(ENGINE) as session:
+        result = session.execute(select(Inventory).where(Inventory.legacy_id == legacy_id)).scalar()
+        return result
+
+
 def inventory_update(i_id: int, **kwargs):
     with Session(ENGINE) as session:
         query = update(Inventory).where(Inventory.id == i_id).values(**kwargs)

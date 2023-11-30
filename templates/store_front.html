@@ -77,12 +77,12 @@ function handleSearch(event) {
 <div id="container">
 {% for part in data %}
   <div class="box">
-    <img src="{{ part.pictureURL }}" alt="Part Image">
+    <img src="{{ part['l'].pictureURL }}" alt="Part Image">
     <div>
-      <p>{{ part.description }}</p>
-      <p>Price: ${{ part.price }}</p>
-      <p>Weight: {{ part.weight }} lbs</p>
-      <p>available: {{ part.stock }}</p>
+      <p>{{ part['l'].description }}</p>
+      <p>Price: ${{ part['l'].price }}</p>
+      <p>Weight: {{ part['l'].weight }} lbs</p>
+      <p>available: {{ part['s'] }}</p>
     </div>
     <!-- Lines for the quantity input and add to cart button -->
       <div class="cart-elements">

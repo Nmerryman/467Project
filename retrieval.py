@@ -10,14 +10,6 @@ from sqlalchemy import insert
 legacy_engine = create_engine("mysql+pymysql://student:student@blitz.cs.niu.edu:3306/csci467", echo=False)
 mysql_engine = create_engine("sqlite:///test.db", echo=False)
 
-def ask_inventory(legacy_id):
-    """
-    Fetch inventory record for a specific legacy_id.
-    """
-    with Session(mysql_engine) as session:
-        result = session.execute(Select(Inventory).where(Inventory.legacy_id == legacy_id)).scalars().first()
-        return result
-
 def add_inventory():
     with Session(legacy_engine) as session:
         # Query to fetch all LegacyParts entries
