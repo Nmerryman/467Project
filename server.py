@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from legacy_interface import LegacyParts, ask_legacy, post_scalars
-from database_interface import inventory_from_legacy_id
+from database_interface import inventory_from_legacy_id, order_not_done
 from sqlalchemy import select
 
 app = Flask(__name__)
@@ -36,7 +36,7 @@ def search():
     query = request.args.get('arg0') # get key for search term to look up in query
 
     s_res = perform_search(query)
- 
+
     # Print the search results to the console
     for item in s_res:
         print(f'Part Number: {item.number}, Part Name: {item.description}, Stock: {item.stock}')
@@ -75,6 +75,11 @@ def cart_elements():
 def add_inventory():
     data = get_data_with_inventory()
     return render_template('inventory_add.html', data=data)
+
+
+@app.route('/orders')
+def order_menu():
+    return render_template('Order_statuses.html', orders=order_not_done())
 
 
 def get_data_with_inventory():
