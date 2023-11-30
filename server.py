@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 
 @app.route("/store_front")
-def productList():
+def product_list():
     # get data from legacy database
     # data = ask_legacy(Select(LegacyParts))
     data = get_data_with_inventory()
@@ -15,9 +15,10 @@ def productList():
     # Render the HTML template and pass the data to it
     return render_template('store_front.html', data=data)
 
+
 @app.route("/")
 def default():
-    return productList()
+    return product_list()
 
 
 @app.route("/search_results")
@@ -34,14 +35,14 @@ def search():
     # Get the search query from the request arguments
     query = request.args.get('arg0') # get key for search term to look up in query
 
-    search_results = perform_search(query)
-
-        # Print the search results to the console
-    for item in search_results:
+    s_res = perform_search(query)
+ 
+    # Print the search results to the console
+    for item in s_res:
         print(f'Part Number: {item.number}, Part Name: {item.description}, Stock: {item.stock}')
 
     # Render the HTML template and pass the search results to it
-    return render_template('search_results.html', data=search_results)
+    return render_template('search_results.html', data=s_res)
 
 
 def perform_search(query):
