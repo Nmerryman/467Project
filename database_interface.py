@@ -235,8 +235,6 @@ def main():
     print(test_order.customer)
 
 
-
-
 if __name__ == '__main__':
     main()
 
