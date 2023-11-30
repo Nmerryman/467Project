@@ -1,8 +1,8 @@
 from database_interface import *
-from legacy_interface import ask_legacy, LegacyParts
+from legacy_interface import ask_legacy, LegacyParts, post_scalars
 from datetime import datetime
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, and_
 
 import random  # We use random numbers because some the exact numbers of some values shouldn't matter
 import faker
@@ -23,7 +23,8 @@ def build_db():
     with Session(ENGINE) as session:
 
         # Add legacy info
-        for a in ask_legacy(select(LegacyParts)):
+        # print(*ask_legacy(select(LegacyParts)), sep="\n")
+        for a in post_scalars(ask_legacy(select(LegacyParts))):
             temp_inventory = Inventory(legacy_id=a.number, stock=0 if random.random() > .5 else random.randint(0, 500))
             session.add(temp_inventory)
 
@@ -53,21 +54,56 @@ def build_db():
         session.commit()
 
 
-def evaluate_costs():
+def evaluate_missing_costnweight():
     with Session(ENGINE) as session:
-        # print(session.execute(select(OrderItem).where(OrderItem.cost.is_(None))).scalars().all())
+        
+        # Update the price and weight of each order item if it's missing.
         for a in session.execute(select(OrderItem).where(OrderItem.cost.is_(None))).scalars().all():
-            print(ask_legacy(select(LegacyParts).where(LegacyParts.number == a.item_id)))
+            part_weight, part_price = post_scalars(ask_legacy(select(LegacyParts.weight, LegacyParts.price).where(LegacyParts.number == a.item_id)))
 
-            print(a.item_id)
-            # session.execute(update(LegacyParts).where(LegacyParts.number == a.item_id).values(cost=))
+            a.cost = part_price * a.quantity
+            a.weight = part_weight * a.quantity
+        
+
+        session.commit()
+    
+    print(*full_table(OrderItem), sep="\n")
+
+
+def update_order_weight():
+    # We do all at once because it's then we know it will always be correct
+    with Session(ENGINE) as session:
+        for a in session.execute(select(Order)).scalars():
+            sum_price = 0
+            sum_weight = 0
+            for b in session.execute(select(OrderItem).where(OrderItem.order_id == a.id)).scalars():
+                part_price, part_weight = post_scalars(ask_legacy(select(LegacyParts.price, LegacyParts.weight).where(LegacyParts.number == b.item_id)))
+                b.cost = part_price * b.quantity
+                b.weight = part_weight * b.quantity
+                sum_price += part_price * b.quantity
+                sum_weight += part_weight * b.quantity
+                # print(b)
+            
+            a.total_cost = sum_price
+            a.total_weight = sum_weight
+
+            fee = session.execute(select(Fees).where(and_(Fees.min_weight <= sum_weight, Fees.max_weight > sum_weight))).scalar()
+            if fee:
+                # print(fee)
+                a.fee_id = fee.id
+            # print(a)
+        
+        session.commit()
+
+            
 
 
 
 def main():
-    # drop_tables()
-    # build_db()
-    evaluate_costs()
+    drop_tables()
+    build_db()
+    update_order_weight()
+    # print(*full_table(Order), sep="\n")
 
 
 

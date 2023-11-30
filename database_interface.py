@@ -43,7 +43,7 @@ class Order(Base):                                                              
     pricing_model: Mapped["Fees"] = relationship(lazy="joined")
 
     def __repr__(self) -> str:
-        return f"Order[{self.id}](cust_id={self.customer_id}, status={self.status}, created={self.created}, finished={self.finished}, pricing_id={self.fee_id}, (${self.total_cost}, {self.total_weight}lb) )"
+        return f"Order[{self.id}](cust_id={self.customer_id}, status={self.status}, created={self.created}, finished={self.finished}, fee_id={self.fee_id}, (${self.total_cost}, {self.total_weight}lb) )"
 
 
 class OrderItem(Base):                                                  # Each item included in an order
@@ -84,6 +84,9 @@ class Fees(Base):
     weight_b: Mapped[float]
     min_weight: Mapped[float]
     max_weight: Mapped[float]
+
+    def __repr__(self) -> str:
+        return f"Fee[{self.id}](name={self.name}, (y={self.weight_m}x+{self.weight_b}), ({self.min_weight}<=x<{self.max_weight}))"
 
 
 ENGINE = create_engine("sqlite:///test.db")
