@@ -13,10 +13,21 @@ def productList():
     # Render the HTML template and pass the data to it
     return render_template('store_front.html', data=data)
 
+<<<<<<< Updated upstream
 @app.route("/search_results")
 def search_results():
     # Get your data (replace this with your actual data fetching code)
     data = ask_legacy(Select(LegacyParts))
+=======
+@app.route("/")
+def default():
+    return productList()
+
+@app.route("/search_results")
+def search_results():
+    # Get legacy data using ask_legacy function 
+    data = ask_legacy(select(LegacyParts))
+>>>>>>> Stashed changes
 
     # Render the HTML template and pass the data to it
     return render_template('search_results.html', data=data)
@@ -28,7 +39,7 @@ def search():
 
     search_results = perform_search(query)
 
-        # Print the search results to the console
+    # Print the search results to the console
     for item in search_results:
         print(f'Part Number: {item.number}, Part Name: {item.description}, Stock: {item.stock}')
 
@@ -36,8 +47,13 @@ def search():
     return render_template('search_results.html', data=search_results)
 
 def perform_search(query):
+<<<<<<< Updated upstream
     # Get all data (replace this with your actual data fetching code)
     all_data = ask_legacy(Select(LegacyParts))
+=======
+    # get all data using ask_legacy
+    all_data = post_scalars(ask_legacy(select(LegacyParts)))
+>>>>>>> Stashed changes
 
     # Filter the data based on the query
     # searches for item in all all_data, and if the item is found within item.description, that item is
