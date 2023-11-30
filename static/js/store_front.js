@@ -1,8 +1,7 @@
-
 function handleSearch(event) {
   var query = event.target.value;
 
-  // Featch search results and update the page
+  // Fetch search results and update the page
   fetcher('search','container', [query], function() {
      // This callback function will be called after the page is updated
      console.log('Page updated with search results for query:', query);
