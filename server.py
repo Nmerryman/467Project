@@ -13,6 +13,10 @@ def productList():
     # Render the HTML template and pass the data to it
     return render_template('store_front.html', data=data)
 
+@app.route("/")
+def default():
+    return productList()
+
 @app.route("/search_results")
 def search_results():
     # Get your data (replace this with your actual data fetching code)
@@ -58,19 +62,19 @@ def cart_elements():
     return render_template('cart.html', data=data)
 
 def get_data_with_inventory():
-    # Get all data (replace this with your actual data fetching code)
-    all_data = ask_legacy(Select(LegacyParts))
+     # Get all data (replace this with your actual data fetching code)
+     all_data = ask_legacy(Select(LegacyParts))
 
-    # Get inventory data for each item
-    for item in all_data:
-        inventory_record = ask_inventory(item.number)
-        if inventory_record is not None:
-            item.stock = inventory_record.stock
+#     # Get inventory data for each item
+#     for item in all_data:
+#         inventory_record = ask_inventory(item.number)
+#         if inventory_record is not None:
+#             item.stock = inventory_record.stock
 
-    return all_data
+     return all_data
 
 if __name__ == '__main__':
-    app.run(debug=True)
+     app.run(debug=True)
 
     
 
