@@ -31,18 +31,6 @@ function fetcher(call_name, target_id, argument=[], callback=() => {/* do nothin
     xhttp.send();
 }
 
-// Initialize cart amount
-let cartAmount = 0;
-
-// Update cart amount
-function updateCartAmount(amount)
-{
-    cartAmount += amount;
-    document.querySelector('.cart-button').innerText = 'Cart(' + cartAmount + ')';
-}
-
-
-
 function setCookie(order_id, order_value) {
     document.cookie = order_id + "=" + order_value + ";";
 }

@@ -27,8 +27,6 @@ def add_inventory():
 
     print("Added Inventory")
 
-
-
 if __name__ == '__main__':
     #add_inventory()
     
@@ -75,7 +73,7 @@ if __name__ == '__main__':
     print("End of Legacy ID's")
 
     test_legacy_id = 1  # replace with a known legacy_id
-    inventory_record = ask_inventory(test_legacy_id)
+#    inventory_record = ask_inventory(test_legacy_id)
     print(f'Inventory Record for Legacy ID {test_legacy_id}: Legacy ID - {inventory_record.legacy_id}, Stock - {inventory_record.stock}')
 
     

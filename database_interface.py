@@ -10,7 +10,6 @@ from sqlalchemy import insert, select, update
 
 import legacy_interface
 
-
 Base = legacy_interface.Base    # Make sure we use the same Base as the other tables to avoid any issues
 
 
@@ -204,7 +203,6 @@ def inventory_from_legacy_id(legacy_id: int):
         result = session.execute(select(Inventory).where(Inventory.legacy_id == legacy_id)).scalar()
         return result
 
-
 def inventory_update(i_id: int, **kwargs):
     with Session(ENGINE) as session:
         query = update(Inventory).where(Inventory.id == i_id).values(**kwargs)
@@ -237,11 +235,13 @@ def main():
     # sec(stmt)
     print("---- List full (basically) inventory table ----")
     print("\n".join(list(map(str, full_table(Inventory)))[0:20]))
-    print("---- list an order object ----")
-    test_order = order_from_id(2)
-    print(test_order)
-    print("---- Print it's joined customer object ----")
-    print(test_order.customer)
+    # print("---- list an order object ----")
+    # test_order = order_from_id(2)
+    # print(test_order)
+    # print("---- Print it's joined customer object ----")
+    # print(test_order.customer)
+    print ("---- Legacy ID, stock ----")
+    print(inventory_from_legacy_id(1))
 
 
 if __name__ == '__main__':
