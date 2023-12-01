@@ -9,6 +9,7 @@ from datetime import datetime
 from sqlalchemy import insert, select, update
 
 import legacy_interface
+from legacy_interface import LegacyParts, ask_legacy, post_scalars
 
 Base = legacy_interface.Base    # Make sure we use the same Base as the other tables to avoid any issues
 
@@ -167,7 +168,7 @@ def order_update(order_id: int, **kwargs):
 def order_not_done():
     with Session(ENGINE) as session:
         query = select(Order).where(Order.status != "Shipped")
-        return session.execute(query).scalars()
+        return session.execute(query).scalars().all()
 
 
 def order_item_new(order_id: int, item_id: int, quantity: int, status: str, cost: float):
@@ -187,6 +188,20 @@ def order_item_update(oi_id: int, **kwargs):
         query = update(OrderItem).where(OrderItem.id == oi_id).values(**kwargs)
         session.execute(query)
         session.commit()
+
+
+def order_item_not_done():
+    # We return and OrderItem but grafted a LegacyParts object on OrderItem.legacy
+    with Session(ENGINE) as session:
+        query = select(OrderItem, Inventory.legacy_id).join(Order).where(Order.status != "Shipped").join(Inventory)
+        temp = session.execute(query).all()
+        # print(temp)
+
+        res = []
+        for a, b in temp:
+            a.legacy = post_scalars(ask_legacy(select(LegacyParts).where(LegacyParts.number == b)))[0]
+            res.append(a)
+        return res
 
 
 def inventory_new(legacy_id: int, stock: int = 0):

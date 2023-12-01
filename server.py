@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from legacy_interface import LegacyParts, ask_legacy, post_scalars
-from database_interface import inventory_from_legacy_id, order_not_done
+from database_interface import inventory_from_legacy_id, order_not_done, order_item_not_done
 from sqlalchemy import select
+
+import json
 
 app = Flask(__name__)
 
@@ -80,6 +82,18 @@ def add_inventory():
 @app.route('/orders')
 def order_menu():
     return render_template('Order_statuses.html', orders=order_not_done())
+
+@app.route('/api/all_order_items')
+def all_order_items():
+    res = {}
+    for a in order_item_not_done():
+        # Create if missing
+        if not a.order_id in res:
+            res[a.order_id] = list()
+        
+        res[a.order_id].append({"name": a.})
+        
+    return jsonify()
 
 
 def get_data_with_inventory():
