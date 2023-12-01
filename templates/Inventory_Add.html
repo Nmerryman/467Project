@@ -13,6 +13,19 @@
 <h1>Receiving Parts</h1>
 {% endblock %}
 
+<script>
+function handleadd(event) {
+  var query = event.target.value;
+
+  // Featch search results and update the page
+  fetcher('search','container', [query], function() {
+     // This callback function will be called after the page is updated
+     console.log('Page updated with search results for query:', query);
+  });
+  // TODO: Use the query to search your data and update the page
+  console.log('Search query:', query);
+}
+</script>
 
 {% block content %}
   <p></p>
@@ -31,9 +44,10 @@
       </div>
       <!-- Lines for the quantity input and add to cart button -->
       <div class="cart-elements">
-        <label style="margin-right:5px"for="quantity">Quantity:</label>
-        <input style="margin-right:5px" type="number" oninput="handleInput()" class="Quantity" name="Quantity" min="1" placeholder="Enter #">
-        <button class="updateButton" disabled="disabled">Update Quantity</button> <!-- Remember to enable button -->
+        <label style="margin-right:5px" for="quantity">Quantity:</label>
+        <input style="margin-right:5px" type="number" onkeypress="enableElement()" oninput="handleInput()" class="Quantity" name="Quantity" min="1" placeholder="Enter #">
+
+        <button class="updateButton" id="button" disabled="disabled">Update Quantity</button> <!-- Remember to enable button -->
       </div>
     </div>
   {% endfor %}

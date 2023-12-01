@@ -96,7 +96,7 @@ function handleSearch(event) {
     <!-- Lines for the quantity input and add to cart button -->
       <div class="cart-elements">
         <label style="margin-right:5px"for="quantity">Quantity:</label>
-        <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" placeholder="Enter #">
+        <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" max="{{ part['s'] }}" placeholder="Enter #">
       <button class="add-to-cart">Add to Cart</button>
     </div>
   </div>
