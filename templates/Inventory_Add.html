@@ -13,41 +13,41 @@
 <h1>Receiving Parts</h1>
 {% endblock %}
 
-<script>
-function handleadd(event) {
-  var query = event.target.value;
-
-  // Featch search results and update the page
-  fetcher('search','container', [query], function() {
-     // This callback function will be called after the page is updated
-     console.log('Page updated with search results for query:', query);
-  });
-  // TODO: Use the query to search your data and update the page
-  console.log('Search query:', query);
-}
-</script>
-
 {% block content %}
-  <p></p>
-  <label for="search-bar" style="margin-left:12px">Search by Description or Quantity:</label>
-  <input style="margin-left:5px" class="search-bar" type="search" oninput="handleSearch(event)" placeholder="Search">
+<p></p>
+<label for="search-bar" style="margin-left:12px">Search by Description or Quantity:</label>
+<input style="margin-left:5px" class="search-bar" type="search" oninput="handleSearch(event)" placeholder="Search">
 
-  <div id="container">
-  {% for part in data %}
-    <div class="box">
-      <img src="{{ part['l'].pictureURL }}" alt="Part Image">
-      <div>
-        <p>{{ part['l'].description }}</p>
-        <p>Price: ${{ part['l'].price }}</p>
-        <p>Weight: {{ part['l'].weight }} lbs</p>
-        <p>Quantity on Hand: {{ part['s'] }}</p>
-      </div>
-      <!-- Lines for the quantity input and add to cart button -->
-      <div class="cart-elements">
-        <label style="margin-right:5px" for="quantity">Quantity:</label>
-        <input style="margin-right:5px" type="number" onkeypress="enableElement()" oninput="handleInput()" class="Quantity" name="Quantity" min="1" placeholder="Enter #">
 
-        <button class="updateButton" id="button" disabled="disabled">Update Quantity</button> <!-- Remember to enable button -->
+<div id="container">
+        {% for part in data %}
+        <div class="box">
+          <img src="{{ part['l'].pictureURL }}" alt="Part Image">
+    <div>
+      <p>{{ part['l'].description }}</p>
+      <p>Price: ${{ part['l'].price }}</p>
+      <p>Weight: {{ part['l'].weight }} lbs</p>
+      <p>Quantity on Hand: {{ part['s'] }}</p>
+    </div>
+    <!-- Lines for the quantity input and add to cart button -->
+    <div class="cart-elements">
+      <label style="margin-right:5px" for="quantity">Quantity:</label>
+      
+      <input style="margin-right:5px" type="number" id="num{{ part['l'].number }}" class="Quantity" name="Quantity" min="0" placeholder="Enter #" onkeyup="onClick('button{{ part["l"].number }}');">
+      <button class="updateButton" id="button{{ part['l'].number }}">Update Quantity</button> <!-- Remember to enable button -->
+      
+      <script>
+        function onClick(el) {
+          const button = document.getElementById(el);
+          var clicks = 0;
+          clicks += 1
+          if(clicks > 0) {
+            button.toggleAttribute("disabled");     
+          }
+          console.log("LLLLLLLL");
+        }
+        </script>
+
       </div>
     </div>
   {% endfor %}
