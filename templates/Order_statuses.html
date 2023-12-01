@@ -4,13 +4,32 @@
 <h1>View order status</h1>
 {% endblock %}
 
+{% block js_scripts %}
+<script>
+function toggle_children(order_id) {
+    const element = document.getElementById(order_id);
+    for (const child of element.children) {
+        if (child.style.display == "none") {
+            child.style.display = "";
+        } else {
+            child.style.display = "none";
+        }
+    }
+    console.log(order_id);
+
+}
+</script>
+{% endblock %}
 
 {% block content %}
 
 <div>
     {% for order in orders %}
-        <div style="border: 1px;border-style: solid; border-color: black;">
-            <p>{{ order }}</p>  
+        <div id="order_{{ order.id }}" onclick="toggle_children('order_{{ order.id }}');" style="border: 1px;border-style: solid; border-color: black;">
+            {{ order }}
+            <div>
+                Text lol
+            </div>
         </div>
     {% endfor %}
 </div>

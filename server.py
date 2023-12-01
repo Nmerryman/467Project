@@ -73,6 +73,7 @@ def cart_elements():
     data = ask_legacy(select(LegacyParts))
     return render_template('cart.html', data=data)
 
+
 @app.route('/add_inventory')
 def add_inventory():
     data = get_data_with_inventory()
@@ -83,6 +84,7 @@ def add_inventory():
 def order_menu():
     return render_template('Order_statuses.html', orders=order_not_done())
 
+
 @app.route('/api/all_order_items')
 def all_order_items():
     res = {}
@@ -91,9 +93,9 @@ def all_order_items():
         if not a.order_id in res:
             res[a.order_id] = list()
         
-        res[a.order_id].append({"name": a.})
+        res[a.order_id].append({"name": a.legacy.description, "url": a.legacy.pictureURL, "count": a.quantity})
         
-    return jsonify()
+    return jsonify(res)
 
 
 def get_data_with_inventory():

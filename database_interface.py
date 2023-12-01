@@ -168,7 +168,12 @@ def order_update(order_id: int, **kwargs):
 def order_not_done():
     with Session(ENGINE) as session:
         query = select(Order).where(Order.status != "Shipped")
-        return session.execute(query).scalars().all()
+
+        res = []
+        for a in session.execute(query).scalars().all():
+            # temp =
+            res.append(a)
+        return res
 
 
 def order_item_new(order_id: int, item_id: int, quantity: int, status: str, cost: float):

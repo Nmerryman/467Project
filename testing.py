@@ -148,6 +148,7 @@ def gen_tables():
 
 if __name__ == '__main__':
     #gen_tables()
-    drop_tables()
-    make_tables()
+    # drop_tables()
+    # make_tables()
+    gen_tables()
     
