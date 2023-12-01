@@ -76,14 +76,14 @@ def add_inventory():
     data = get_data_with_inventory()
     return render_template('inventory_add.html', data=data)
 
+#@app.route('/admin')
+#def admin_page():
+
+#@app.route('/fulfillment')
+#def 
 
 def get_data_with_inventory():
     # Get all data (replace this with your actual data fetching code)
     all_data = post_scalars(ask_legacy(select(LegacyParts)))
 
     return [{"l": a, "s": inventory_from_legacy_id(a.number).stock} for a in all_data]
-
-
-    
-
-
