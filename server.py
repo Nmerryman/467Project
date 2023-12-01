@@ -44,6 +44,7 @@ def search():
     # Render the HTML template and pass the search results to it
     return render_template('search_results.html', data=s_res)
 
+
 def perform_search(query):
     # Get all data (replace this with your actual data fetching code)
     all_data = post_scalars(ask_legacy(select(LegacyParts)))
@@ -65,22 +66,21 @@ def perform_search(query):
     return s_res
 
 
-
 @app.route('/cart')
 def cart_elements():
     data = ask_legacy(select(LegacyParts))
     return render_template('cart.html', data=data)
+
 
 @app.route('/add_inventory')
 def add_inventory():
     data = get_data_with_inventory()
     return render_template('inventory_add.html', data=data)
 
-#@app.route('/admin')
-#def admin_page():
 
-#@app.route('/fulfillment')
-#def 
+# @app.route('/admin')
+# def admin_page():
+
 
 def get_data_with_inventory():
     # Get all data (replace this with your actual data fetching code)
