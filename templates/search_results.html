@@ -1,19 +1,19 @@
 <p style="margin-left:12px">Search Results:</p> <!--Placeholder // Replace with function to print respective message if no results or all results-->
 
 {% for part in data %}
-<div class="box">
-  <img src="{{ part['l'].pictureURL }}" alt="Part Image">
-  <div>
-    <p>{{ part['l'].description }}</p>
-    <p>Price: ${{ part['l'].price }}</p>
-    <p>Weight: {{ part['l'].weight }} lbs</p>
-    <p>available: {{ part['s'] }}</p>
-  </div>
+  <div class="box">
+    <img src="{{ part.pictureURL }}" alt="Part Image">
+    <div>
+      <p>{{ part.description }}</p>
+      <p>Price: ${{ part.price }}</p>
+      <p>Weight: {{ part.weight }} lbs</p>
+      <p>available: {{ part.stock }}</p>
+    </div>
     <!-- Lines for the quantity input and add to cart button -->
     <div class="cart-elements">
       <label style="margin-right:5px"for="quantity">Quantity:</label>
-      <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" max="{{ part['s'] }}" placeholder="Enter #" {{'disabled' if part['s'] == 0}}>
-      <button class="add-to-cart" {{'disabled' if part['s'] == 0}}>Add to Cart</button>
+      <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" max="{{ part['s'] }}" placeholder="Enter #" {{'disabled' if part.stock == 0}}>
+      <button class="add-to-cart" {{'disabled' if part.stock == 0}}>Add to Cart</button>
     </div>
   </div>
 {% endfor %}
