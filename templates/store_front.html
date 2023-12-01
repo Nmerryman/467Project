@@ -1,35 +1,42 @@
 {% extends 'base.html' %}
 
-<!--Here we handle page specific scripts-->
 {% block js_scripts %}
-<script src="{{ url_for('static', filename='js/store_front.js') }}"></script>
+<script>
+function handleSearch(event) {
+  var query = event.target.value;
+
+  // Fetch search results and update the page
+  fetcher('search','container', [query], function() {
+     // This callback function will be called after the page is updated
+     console.log('Page updated with search results for query:', query);
+  });
+  // TODO: Use the query to search your data and update the page
+  console.log('Search query:', query);
+}
+</script>
 {% endblock %}
 
 
 {% block content %}
-  <input class="search-bar" type="search" oninput="handleSearch(event)" placeholder="Enter car part">
-
   <div id="container">
-  {% for part in data %}
-    <div class="box">
-      <img src="{{ part['l'].pictureURL }}" alt="Part Image">
-      <div>
-        <p>{{ part['l'].description }}</p>
-        <p>Price: ${{ part['l'].price }}</p>
-        <p>Weight: {{ part['l'].weight }} lbs</p>
-        <p>available: {{ part['s'] }}</p>
+    {% for part in data %}
+      <div class="box">
+        <img src="{{ part['l'].pictureURL }}" alt="Part Image">
+        <div>
+          <p>{{ part['l'].description }}</p>
+          <p>Price: ${{ part['l'].price }}</p>
+          <p>Weight: {{ part['l'].weight }} lbs</p>
+          <p>Available: {{ part['s'] }}</p>
+        </div>
+        <!-- Lines for the quantity input and add to cart button -->
+          <div class="cart-elements">
+            <label style="margin-right:5px"for="quantity">Quantity:</label>
+            <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" max="{{ part['s'] }}" placeholder="Enter #" {{'disabled' if part['s'] == 0}}>
+          <button class="add-to-cart" {{'disabled' if part['s'] == 0}}>Add to Cart</button>
+        </div>
       </div>
-      <!-- Lines for the quantity input and add to cart button -->
-      <div class="cart-elements">
-        <label style="margin-right:5px"for="quantity">Quantity:</label>
-        <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" placeholder="Enter #">
-        <button class="add-to-cart">Add to Cart</button>
-      </div>
-    </div>
-  {% endfor %}
+    {% endfor %}
   </div>
-
 {% endblock %}
-
 
 

@@ -103,8 +103,3 @@ def get_data_with_inventory():
     all_data = post_scalars(ask_legacy(select(LegacyParts)))
 
     return [{"l": a, "s": inventory_from_legacy_id(a.number).stock} for a in all_data]
-
-
-    
-
-

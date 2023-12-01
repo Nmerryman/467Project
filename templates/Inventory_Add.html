@@ -2,40 +2,53 @@
 
 <!--Here we handle page specific scripts-->
 {% block js_scripts %}
-<script src="{{ url_for('static', filename='js/store_front.js') }}"></script>
-<script src="{{ url_for('static', filename='js/inventory_add.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/store_front.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/inventory_add.js') }}"></script>
 {% endblock %}
 
 {% block buttons %}
 <!-- for no buttons -->
 {% endblock %}
+
 {% block title %}
-<h1>Receiving Parts</h1>
+  <h1>Receiving Parts</h1>
 {% endblock %}
 
-
 {% block content %}
-  <label for="search-bar">Search:</label>
-  <input class="search-bar" type="search" oninput="handleSearch(event)" placeholder="Enter car part or quantity">
+<p></p>
+<label for="search-bar" style="margin-left:12px">Search by Description or Quantity:</label>
+<input style="margin-left:5px" class="search-bar" type="search" oninput="handleSearch(event)" placeholder="Search">
 
-  <div id="container">
+
+<div id="container">
   {% for part in data %}
     <div class="box">
       <img src="{{ part['l'].pictureURL }}" alt="Part Image">
-      <div>
-        <p>{{ part['l'].description }}</p>
-        <p>Price: ${{ part['l'].price }}</p>
-        <p>Weight: {{ part['l'].weight }} lbs</p>
-        <p>Quantity on Hand: {{ part['s'] }}</p>
-      </div>
+        <div>
+          <p>{{ part['l'].description }}</p>
+          <p>Price: ${{ part['l'].price }}</p>
+          <p>Weight: {{ part['l'].weight }} lbs</p>
+          <p>Quantity on Hand: {{ part['s'] }}</p>
+        </div>
       <!-- Lines for the quantity input and add to cart button -->
-      <div class="cart-elements">
-        <label style="margin-right:5px"for="quantity">Quantity:</label>
-        <input style="margin-right:5px" type="number" oninput="handleInput()" class="Quantity" name="Quantity" min="1" placeholder="Enter #">
-        <button class="updateButton" disabled>Update Quantity</button>
+        <div class="cart-elements">
+          <label style="margin-right:5px" for="quantity">Quantity:</label>
+
+          <input style="margin-right:5px" type="number" id="num{{ part['l'].number }}" class="Quantity" name="Quantity" min="1" placeholder="Enter #" onchange="onClick('button{{ part["l"].number }}');">
+          <button class="updateButton" id="button{{ part['l'].number }}" disabled>Update Quantity</button> <!-- Remember to enable button -->
+
+        <script>
+          function onClick(el) {
+            const button = document.getElementById(el);
+            var clicks = 0;
+            clicks += 1
+            if(clicks > 0) {
+              button.removeAttribute("disabled");
+            }
+          }
+        </script>
       </div>
     </div>
   {% endfor %}
-  </div>
-
+</div>
 {% endblock %}
