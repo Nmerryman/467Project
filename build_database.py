@@ -42,7 +42,7 @@ def build_db():
         session.add(Order(customer_id=1, status="Shipped", created=datetime(2020, 5, 17), finished=datetime(2020, 6, 5)))
         session.add(Order(customer_id=2, status="Shipped", created=datetime(2021, 5, 17), finished=datetime(2021, 6, 5)))
         session.add(Order(customer_id=3, status="In Progress", created=datetime(2022, 5, 17), finished=datetime(2024, 6, 5)))
-        session.add(Order(customer_id=1, status="Waiting", created=datetime(2020, 5, 17)))
+        session.add(Order(customer_id=1, status="In Queue", created=datetime(2020, 5, 17)))
 
         # Add some items to the orders
         session.add(OrderItem(order_id=1, item_id=10, quantity=2))

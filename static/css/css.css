@@ -57,8 +57,75 @@
 }
 
 body {
-    background-color: gray;
+    background-color: grey;
 }
+
+.order_entry {
+    border: 1px solid black;
+}
+
+.order_items {
+    /*display: none;*/
+}
+
+.order_item {
+    border: 1px solid black;
+    padding: 2px;
+    display: flex;
+}
+
+.order_item_img {
+
+}
+
+.order_item_desc {
+    margin-left: 1em;
+}
+
+.order_text {
+    flex: 1;
+    /*text-align: center;*/
+    align-self: center;
+}
+
+.order_info {
+    display: flex;
+    justify-content: center;
+}
+
+.order_status_btn {
+    background: #2A6724;
+    width: 15em;
+    height: 6em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.order_status_content {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    width: 15em;
+    /*height: 5em;*/
+    justify-content: center;
+}
+
+.order_status_menu:hover .order_status_content {
+    display: block;
+    background: white;
+}
+
+.order_status_content div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2em;
+    border: 1px solid black;
+    background: #3A7734;
+}
+
 
 /*.search-bar {
     margin-left: 10px;

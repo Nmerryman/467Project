@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from legacy_interface import LegacyParts, ask_legacy, post_scalars
-from database_interface import inventory_from_legacy_id, order_not_done, order_item_not_done
+from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
+                                order_items_from_order, legacy_from_order_item_id, order_from_id)
 from sqlalchemy import select
 
 import json
@@ -82,10 +83,10 @@ def add_inventory():
 
 @app.route('/orders')
 def order_menu():
-    return render_template('Order_statuses.html', orders=order_not_done())
+    return render_template('Order_statuses.html', orders=order_not_done(), order_items=all_order_items())
 
 
-@app.route('/api/all_order_items')
+# @app.route('/api/all_order_items')
 def all_order_items():
     res = {}
     for a in order_item_not_done():
@@ -95,7 +96,24 @@ def all_order_items():
         
         res[a.order_id].append({"name": a.legacy.description, "url": a.legacy.pictureURL, "count": a.quantity})
         
-    return jsonify(res)
+    return res
+
+
+@app.route("/api/update_order/<val>/<status>")
+def update_inventory(val, status):
+    order_update(val, status=status)
+    return "ok"
+
+
+@app.route("/invoice/<order_id>")
+def load_invoice(order_id):
+    items = order_items_from_order(order_id)
+    order = order_from_id(order_id)
+    sum_price = 0
+    for a in items:
+        a.name = legacy_from_order_item_id(a.id).description
+        sum_price += a.cost
+    return render_template('invoice.html', order_items=items, order=order, sum_price=sum_price)
 
 
 def get_data_with_inventory():
