@@ -53,7 +53,6 @@ class OrderItem(Base):                                                  # Each i
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
     item_id: Mapped[int] = mapped_column(ForeignKey("inventory.id"))
     quantity: Mapped[int]                                               # Num of items in the order
-    status: Mapped[str]                                                 # Status such as [missing_stock, collecting, ready]
     cost: Mapped[Optional[float]]                                       # Store a precalculated value for cost
     weight: Mapped[Optional[float]]
 

@@ -45,11 +45,12 @@ def build_db():
         session.add(Order(customer_id=1, status="Waiting", created=datetime(2020, 5, 17)))
 
         # Add some items to the orders
-        session.add(OrderItem(order_id=1, item_id=10, quantity=2, status="Packed"))
-        session.add(OrderItem(order_id=1, item_id=12, quantity=1, status="Packed"))
-        session.add(OrderItem(order_id=2, item_id=15, quantity=5, status="Packed"))
-        session.add(OrderItem(order_id=3, item_id=20, quantity=2, status="Claimed"))
-        session.add(OrderItem(order_id=3, item_id=30, quantity=2, status="Available"))
+        session.add(OrderItem(order_id=1, item_id=10, quantity=2))
+        session.add(OrderItem(order_id=1, item_id=12, quantity=1))
+        session.add(OrderItem(order_id=2, item_id=15, quantity=5))
+        session.add(OrderItem(order_id=3, item_id=20, quantity=2))
+        session.add(OrderItem(order_id=3, item_id=30, quantity=2))
+        session.add(OrderItem(order_id=4, item_id=40, quantity=300))
 
         session.commit()
 
