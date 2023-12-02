@@ -53,7 +53,10 @@ function update_order_status(id, status) {
                     </div>
 
                 </div>
-                <div class="order_text"></div>
+                <div class="order_text" style="text-align: right">
+                    <a href="/invoice/{{ order.id }}">Get Invoice</a>
+                    <a href="/shipping/{{ order.id }}">Get Shipping Label</a>
+                </div>
 
             </div>
             <div class="order_items">

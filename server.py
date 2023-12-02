@@ -116,6 +116,11 @@ def load_invoice(order_id):
     return render_template('invoice.html', order_items=items, order=order, sum_price=sum_price, round=round)
 
 
+@app.route("/shipping/<order_id>")
+def load_shipping(order_id):
+    return render_template("shipping.html", order=order_from_id(order_id))
+
+
 def get_data_with_inventory():
     # Get all data (replace this with your actual data fetching code)
     all_data = post_scalars(ask_legacy(select(LegacyParts)))
