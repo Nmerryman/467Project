@@ -38,12 +38,13 @@ class Order(Base):                                                              
     fee_id: Mapped[Optional[int]] = mapped_column(ForeignKey("fees.id"))
     total_weight: Mapped[Optional[float]]
     total_cost: Mapped[Optional[float]]                                          # Just store the calculated cost for ease
+    total_cost_post_fee: Mapped[Optional[float]]
 
     customer: Mapped[Customer] = relationship(lazy="joined")
     pricing_model: Mapped["Fees"] = relationship(lazy="joined")
 
     def __repr__(self) -> str:
-        return f"Order[{self.id}](cust_id={self.customer_id}, status={self.status}, created={self.created}, finished={self.finished}, fee_id={self.fee_id}, (${self.total_cost}, {self.total_weight}lb) )"
+        return f"Order[{self.id}](cust_id={self.customer_id}, status={self.status}, created={self.created}, finished={self.finished}, fee_id={self.fee_id}, (${self.total_cost}->${self.total_cost_post_fee}, {self.total_weight}lb) )"
 
 
 class OrderItem(Base):                                                  # Each item included in an order

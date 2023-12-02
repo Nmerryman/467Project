@@ -92,7 +92,10 @@ def update_order_weight():
             if fee:
                 # print(fee)
                 a.fee_id = fee.id
-            # print(a)
+                a.total_cost_post_fee = a.total_cost + fee.weight_m * a.total_weight + fee.weight_b
+            else:
+                print("No fee found for order", a.id)
+            print(a)
         
         session.commit()
 

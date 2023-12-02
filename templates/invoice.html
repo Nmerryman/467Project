@@ -1,0 +1,48 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>
+        Invoice:
+    </h1>
+    <table>
+        <tr>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Cost</th>
+        </tr>
+        {% for r in order_items %}
+            <tr>
+                <td>{{ r.name }}</td>
+                <td>{{ r.quantity }}</td>
+                <td>{{ r.cost }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td>Price:</td>
+            <td>{{ sum_price }}</td>
+        </tr>
+        <tr>
+            <td>Weight:</td>
+            <td>{{ order.total_weight }}</td>
+        </tr>
+        <tr>
+            <td>Shipping Cost:</td>
+            <td>{{ order.total_cost_post_fee - sum_price }}</td>
+        </tr>
+        <tr>
+            <td>Total Cost:</td>
+            <td>{{ order.total_cost_post_fee }}</td>
+        </tr>
+
+    </table>
+</body>
+</html>
