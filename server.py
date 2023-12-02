@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, jsonify
-from legacy_interface import LegacyParts, ask_legacy, post_scalars
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_item_by_id
 from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
                                 order_items_from_order, legacy_from_order_item_id, order_from_id)
 from sqlalchemy import select
@@ -7,10 +7,11 @@ from sqlalchemy import select
 import json
 
 app = Flask(__name__)
+app.secret_key = 'super secret key'
 
 
 @app.route("/store_front")
-def product_list():
+def store_front():
     # get data from legacy database
     # data = ask_legacy(Select(LegacyParts))
     data = get_data_with_inventory()
@@ -21,7 +22,7 @@ def product_list():
 
 @app.route("/")
 def default():
-    return product_list()
+    return store_front()
 
 
 @app.route("/search_results")
@@ -67,13 +68,6 @@ def perform_search(query):
             item.stock = inventory_record.stock
 
     return s_res
-
-
-@app.route('/cart')
-def cart_elements():
-    data = ask_legacy(select(LegacyParts))
-    return render_template('cart.html', data=data)
-
 
 @app.route('/add_inventory')
 def add_inventory():
@@ -122,8 +116,41 @@ def load_shipping(order_id):
 
 
 def get_data_with_inventory():
-    # Get all data (replace this with your actual data fetching code)
+    # Get all data with inventory
     all_data = post_scalars(ask_legacy(select(LegacyParts)))
 
     # a legacy part, s is a number, which is the stock
     return [{"l": a, "s": inventory_from_legacy_id(a.number).stock} for a in all_data]
+    
+from flask import request, jsonify
+
+# further checks need to be done, right now duplicate items are allowed, we want to increment to amount instead
+@app.route('/add_to_cart/<item_id>', methods=['POST'])
+def add_to_cart(item_id):
+    if 'cart' not in session:
+        session['cart'] = []
+    session['cart'].append(item_id)
+    session.modified = True
+    return 'item successfully added to cart!!!'
+
+@app.route('/cart')
+def view_cart():
+    # Get the item ids from the session
+    item_ids = session.get('cart', [])
+    items = []
+    
+    for item_id in item_ids:
+        item = get_item_by_id(item_id)
+        items.append(item)
+
+    print(f"Items in cart: {items}")
+
+    # Pass the items to the template
+    return render_template('cart.html', items=items)
+
+@app.route('/clear_cart')
+def clear_cart():
+    session.clear()
+    return redirect(url_for('store_front'))
+
+
