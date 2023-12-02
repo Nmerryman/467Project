@@ -31,24 +31,8 @@ function fetcher(call_name, target_id, argument=[], callback=() => {/* do nothin
     xhttp.send();
 }
 
-function setCookie(order_id, order_value) {
-    document.cookie = order_id + "=" + order_value + ";";
-}
 
-function getCookie(order_id) {
-    let name = order_id + "=";
-    let ca = document.cookie.split(';');
-    for(let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) == ' ') {
-        c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-        return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}
+
 
 
 
