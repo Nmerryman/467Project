@@ -7,9 +7,9 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>
+    <h2>
         Invoice:
-    </h1>
+    </h2>
     <table>
         <tr>
             <th>Description</th>
@@ -28,19 +28,19 @@
     <table>
         <tr>
             <td>Price:</td>
-            <td>{{ sum_price }}</td>
+            <td>${{ round(sum_price, 2) }}</td>
         </tr>
         <tr>
             <td>Weight:</td>
-            <td>{{ order.total_weight }}</td>
+            <td> {{ round(order.total_weight, 3) }}</td>
         </tr>
         <tr>
             <td>Shipping Cost:</td>
-            <td>{{ order.total_cost_post_fee - sum_price }}</td>
+            <td>${{ round(order.total_cost_post_fee - sum_price, 2) }}</td>
         </tr>
         <tr>
             <td>Total Cost:</td>
-            <td>{{ order.total_cost_post_fee }}</td>
+            <td>${{ round(order.total_cost_post_fee, 2) }}</td>
         </tr>
 
     </table>

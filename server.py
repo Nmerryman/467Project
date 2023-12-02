@@ -113,7 +113,7 @@ def load_invoice(order_id):
     for a in items:
         a.name = legacy_from_order_item_id(a.id).description
         sum_price += a.cost
-    return render_template('invoice.html', order_items=items, order=order, sum_price=sum_price)
+    return render_template('invoice.html', order_items=items, order=order, sum_price=sum_price, round=round)
 
 
 def get_data_with_inventory():
