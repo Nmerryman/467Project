@@ -63,6 +63,14 @@ Add some extra helper funtions to interact with the legacy database. Ideally we 
 legacy db in this file. 
 """
 
+def get_item_by_id(item_id):
+    with Session(ENGINE) as session:
+        query = Select(LegacyParts).filter(LegacyParts.number == item_id)
+        result = session.execute(query)
+        item = result.scalar_one()
+        return item
+
+
 
 if __name__ == '__main__':
 
