@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<h1>View order status</h1>
+{% endblock %}
+
+{% block js_scripts %}
+<script>
+function toggle_children(order_id) {
+    const element = document.getElementById(order_id);
+    for (const child of element.children) {
+        if (child.classList.contains("order_items")) {
+            if (child.style.display === "none") {
+                child.style.display = "";
+            } else {
+                child.style.display = "none";
+            }
+        }
+    }
+    console.log("Folded: " + order_id);
+
+}
+
+function update_order_status(id, status) {
+    let xhttp = new XMLHttpRequest();
+    let url = "api/update_order/" + id + "/" + status;
+    xhttp.open("GET", url);
+    xhttp.onload = () => {
+        console.log("loaded response");
+        location.reload();
+    };
+    xhttp.send();
+    console.log("Sent: " + status + " to " + id);
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div>
+    {% for order in orders %}
+        <div id="order_{{ order.id }}" class="order_entry" onclick="toggle_children('order_{{ order.id }}')">
+            <div class="order_info">
+                <div class="order_text">
+                    Order: <span>{{ order.id }}</span>
+                </div>
+                <div class="order_status_menu">
+                    <div class="order_status_btn">Status: {{ order.status }}</div>
+                    <div class="order_status_content">
+                        <div onclick="update_order_status({{ order.id }}, 'In Queue')">In Queue</div>
+                        <div onclick="update_order_status({{ order.id }}, 'In Progress')">In Progress</div>
+                        <div onclick="update_order_status({{ order.id }}, 'Shipped')">Shipped</div>
+                    </div>
+
+                </div>
+                <div class="order_text" style="text-align: right">
+                    <a href="/invoice/{{ order.id }}">Get Invoice</a>
+                    <a href="/shipping/{{ order.id }}">Get Shipping Label</a>
+                </div>
+
+            </div>
+            <div class="order_items">
+                {% for o_item in order_items[order.id] %}
+                    <div class="order_item">
+                        <img src="{{ o_item['url'] }}" class="order_item_img">
+                        <div class="order_item_desc">
+                            <div>
+                                {{ o_item['name'] }}
+                            </div>
+                            <div>
+                                quantity: {{ o_item['count'] }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+<!--        Fix to make sure the orders start collapsed -->
+        <script>
+            toggle_children('order_{{ order.id }}');
+        </script>
+    {% endfor %}
+</div>
+
+{% endblock %}
+

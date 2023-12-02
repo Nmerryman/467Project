@@ -9,6 +9,7 @@ from datetime import datetime
 from sqlalchemy import insert, select, update
 
 import legacy_interface
+from legacy_interface import LegacyParts, ask_legacy, post_scalars
 
 Base = legacy_interface.Base    # Make sure we use the same Base as the other tables to avoid any issues
 
@@ -37,12 +38,13 @@ class Order(Base):                                                              
     fee_id: Mapped[Optional[int]] = mapped_column(ForeignKey("fees.id"))
     total_weight: Mapped[Optional[float]]
     total_cost: Mapped[Optional[float]]                                          # Just store the calculated cost for ease
+    total_cost_post_fee: Mapped[Optional[float]]
 
     customer: Mapped[Customer] = relationship(lazy="joined")
     pricing_model: Mapped["Fees"] = relationship(lazy="joined")
 
     def __repr__(self) -> str:
-        return f"Order[{self.id}](cust_id={self.customer_id}, status={self.status}, created={self.created}, finished={self.finished}, fee_id={self.fee_id}, (${self.total_cost}, {self.total_weight}lb) )"
+        return f"Order[{self.id}](cust_id={self.customer_id}, status={self.status}, created={self.created}, finished={self.finished}, fee_id={self.fee_id}, (${self.total_cost}->${self.total_cost_post_fee}, {self.total_weight}lb) )"
 
 
 class OrderItem(Base):                                                  # Each item included in an order
@@ -52,7 +54,6 @@ class OrderItem(Base):                                                  # Each i
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
     item_id: Mapped[int] = mapped_column(ForeignKey("inventory.id"))
     quantity: Mapped[int]                                               # Num of items in the order
-    status: Mapped[str]                                                 # Status such as [missing_stock, collecting, ready]
     cost: Mapped[Optional[float]]                                       # Store a precalculated value for cost
     weight: Mapped[Optional[float]]
 
@@ -60,7 +61,7 @@ class OrderItem(Base):                                                  # Each i
     item: Mapped["Inventory"] = relationship(lazy="joined")
 
     def __repr__(self) -> str:
-        return f"OrderItem[{self.id}](order={self.order_id}, item_id={self.item_id}, quantity={self.quantity}, status={self.status}, cost={self.cost})"
+        return f"OrderItem[{self.id}](order={self.order_id}, item_id={self.item_id}, quantity={self.quantity}, cost={self.cost})"
 
 
 class Inventory(Base):                                              # Stores current state of the stock of every item in inventory
@@ -164,6 +165,17 @@ def order_update(order_id: int, **kwargs):
         session.commit()
 
 
+def order_not_done():
+    with Session(ENGINE) as session:
+        query = select(Order).where(Order.status != "Shipped")
+
+        res = []
+        for a in session.execute(query).scalars().all():
+            # temp =
+            res.append(a)
+        return res
+
+
 def order_item_new(order_id: int, item_id: int, quantity: int, status: str, cost: float):
     with Session(ENGINE) as session:
         order_item = OrderItem(order_id=order_id, item_id=item_id, quantity=quantity, status=status, cost=cost)
@@ -181,6 +193,26 @@ def order_item_update(oi_id: int, **kwargs):
         query = update(OrderItem).where(OrderItem.id == oi_id).values(**kwargs)
         session.execute(query)
         session.commit()
+
+
+def order_item_not_done():
+    # We return and OrderItem but grafted a LegacyParts object on OrderItem.legacy
+    with Session(ENGINE) as session:
+        query = select(OrderItem, Inventory.legacy_id).join(Order).where(Order.status != "Shipped").join(Inventory)
+        temp = session.execute(query).all()
+        # print(temp)
+
+        res = []
+        for a, b in temp:
+            a.legacy = post_scalars(ask_legacy(select(LegacyParts).where(LegacyParts.number == b)))[0]
+            res.append(a)
+        return res
+
+
+def order_items_from_order(o_id: int):
+    with Session(ENGINE) as session:
+        query = select(OrderItem).where(Order.id == o_id).join(Order)
+        return session.execute(query).scalars().all()
 
 
 def inventory_new(legacy_id: int, stock: int = 0):
@@ -227,6 +259,13 @@ def fee_update(f_id: int, **kwargs):
         query = update(Fees).where(Fees.id == f_id).values(**kwargs)
         session.execute(query)
         session.commit()
+
+
+def legacy_from_order_item_id(oi_id: int):
+    with Session(ENGINE) as session:
+        query = select(Inventory.legacy_id).join(OrderItem).where(OrderItem.id == oi_id)
+        leg_id = session.execute(query).scalar_one()
+        return post_scalars(ask_legacy(select(LegacyParts).where(LegacyParts.number == leg_id)))[0]
 
 
 def main():

@@ -7,6 +7,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from itertools import chain
 
+
 class Base(DeclarativeBase):
     pass
 

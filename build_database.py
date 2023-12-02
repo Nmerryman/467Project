@@ -42,14 +42,15 @@ def build_db():
         session.add(Order(customer_id=1, status="Shipped", created=datetime(2020, 5, 17), finished=datetime(2020, 6, 5)))
         session.add(Order(customer_id=2, status="Shipped", created=datetime(2021, 5, 17), finished=datetime(2021, 6, 5)))
         session.add(Order(customer_id=3, status="In Progress", created=datetime(2022, 5, 17), finished=datetime(2024, 6, 5)))
-        session.add(Order(customer_id=1, status="Waiting", created=datetime(2020, 5, 17)))
+        session.add(Order(customer_id=1, status="In Queue", created=datetime(2020, 5, 17)))
 
         # Add some items to the orders
-        session.add(OrderItem(order_id=1, item_id=10, quantity=2, status="Packed"))
-        session.add(OrderItem(order_id=1, item_id=12, quantity=1, status="Packed"))
-        session.add(OrderItem(order_id=2, item_id=15, quantity=5, status="Packed"))
-        session.add(OrderItem(order_id=3, item_id=20, quantity=2, status="Claimed"))
-        session.add(OrderItem(order_id=3, item_id=30, quantity=2, status="Available"))
+        session.add(OrderItem(order_id=1, item_id=10, quantity=2))
+        session.add(OrderItem(order_id=1, item_id=12, quantity=1))
+        session.add(OrderItem(order_id=2, item_id=15, quantity=5))
+        session.add(OrderItem(order_id=3, item_id=20, quantity=2))
+        session.add(OrderItem(order_id=3, item_id=30, quantity=2))
+        session.add(OrderItem(order_id=4, item_id=40, quantity=300))
 
         session.commit()
 
@@ -91,7 +92,10 @@ def update_order_weight():
             if fee:
                 # print(fee)
                 a.fee_id = fee.id
-            # print(a)
+                a.total_cost_post_fee = a.total_cost + fee.weight_m * a.total_weight + fee.weight_b
+            else:
+                print("No fee found for order", a.id)
+            print(a)
         
         session.commit()
 

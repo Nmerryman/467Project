@@ -1,7 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from legacy_interface import LegacyParts, ask_legacy, post_scalars
-from database_interface import inventory_from_legacy_id
+from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
+                                order_items_from_order, legacy_from_order_item_id, order_from_id)
 from sqlalchemy import select
+
+import json
 
 app = Flask(__name__)
 
@@ -36,7 +39,7 @@ def search():
     query = request.args.get('arg0') # get key for search term to look up in query
 
     s_res = perform_search(query)
- 
+
     # Print the search results to the console
     for item in s_res:
         print(f'Part Number: {item.number}, Part Name: {item.description}, Stock: {item.stock}')
@@ -78,8 +81,44 @@ def add_inventory():
     return render_template('inventory_add.html', data=data)
 
 
-# @app.route('/admin')
-# def admin_page():
+@app.route('/orders')
+def order_menu():
+    return render_template('Order_statuses.html', orders=order_not_done(), order_items=all_order_items())
+
+
+# @app.route('/api/all_order_items')
+def all_order_items():
+    res = {}
+    for a in order_item_not_done():
+        # Create if missing
+        if not a.order_id in res:
+            res[a.order_id] = list()
+        
+        res[a.order_id].append({"name": a.legacy.description, "url": a.legacy.pictureURL, "count": a.quantity})
+        
+    return res
+
+
+@app.route("/api/update_order/<val>/<status>")
+def update_inventory(val, status):
+    order_update(val, status=status)
+    return "ok"
+
+
+@app.route("/invoice/<order_id>")
+def load_invoice(order_id):
+    items = order_items_from_order(order_id)
+    order = order_from_id(order_id)
+    sum_price = 0
+    for a in items:
+        a.name = legacy_from_order_item_id(a.id).description
+        sum_price += a.cost
+    return render_template('invoice.html', order_items=items, order=order, sum_price=sum_price, round=round)
+
+
+@app.route("/shipping/<order_id>")
+def load_shipping(order_id):
+    return render_template("shipping.html", order=order_from_id(order_id))
 
 
 def get_data_with_inventory():

@@ -112,8 +112,7 @@ def add_order_item():
     with Session(ENGINE) as session:
         for _ in range(gen_counts["OrderItem"]):
             oi = OrderItem(order_id=random.randint(1, gen_counts["Order"]), item_id=random.randint(1, gen_counts["Inventory"]),
-                                            quantity=random.randint(1, 20), status=random.choice(status_options),
-                                            cost=random.random()*50)
+                                            quantity=random.randint(1, 20), cost=random.random()*50)
             session.add(oi)
         session.commit()
 
@@ -148,6 +147,7 @@ def gen_tables():
 
 if __name__ == '__main__':
     #gen_tables()
-    drop_tables()
-    make_tables()
+    # drop_tables()
+    # make_tables()
+    gen_tables()
     
