@@ -40,7 +40,8 @@ function updateCartTotal(cart_total)
   console.log('Cart successfully updated with: ', cart_total);
 }
 
-function addToCart(quantity_id, button_id, available_id)
+//USE THIS AS A TEMPLATE FOR UPDATING ELEMENTS ON STORE_FRONT!!!
+/*function addToCart(quantity_id, button_id, available_id)
 {
   console.log('hi');
   const number = document.getElementById(quantity_id);
@@ -77,5 +78,25 @@ function addToCart(quantity_id, button_id, available_id)
 
   console.log('Quantity entered: ', number.value);
   console.log('Button_id: ', add_to_cart_button);
-}
+}*/
 
+// This needs to be changed, only handle the request for the session here.
+// Make separate functions that are called that edit other parts the other elements
+// the other elements also need to be saved in the session, particularly availability, and quantity so we can send it over to the cart page 
+function addToCart(call_name, quantity_id, button_id, available_id, argument, callback=() => {/* do nothing */}) {
+    var xhttp = new XMLHttpRequest;
+ 
+    xhttp.open("POST", "/" + call_name + '/' + argument); 
+
+    console.log("POST", "/" + call_name + '/' + argument); 
+
+    console.log('call_name:', call_name); // print call_name
+    console.log('argument[]:', argument); // print argument[]
+
+    xhttp.onload = function() {
+        console.log('Server response:', this.responseText);
+
+        callback();
+    };
+    xhttp.send();
+}
