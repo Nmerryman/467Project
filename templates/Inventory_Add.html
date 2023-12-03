@@ -36,17 +36,6 @@
 
           <input style="margin-right:5px" type="number" id="num{{ part['l'].number }}" class="Quantity" name="Quantity" min="1" placeholder="Enter #" onchange="onClick('button{{ part["l"].number }}');">
           <button class="updateButton" id="button{{ part['l'].number }}" disabled>Update Quantity</button>
-
-        <script>
-          function onClick(el) {
-            const button = document.getElementById(el);
-            var clicks = 0;
-            clicks += 1
-            if(clicks > 0) {
-              button.removeAttribute("disabled");
-            }
-          }
-        </script>
       </div>
     </div>
   {% endfor %}

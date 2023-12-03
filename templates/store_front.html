@@ -27,17 +27,6 @@
             <button class="add-to-cart" id="button{{ part['l'].number }}" disabled onclick="addToCart('add_to_cart', 'num{{ part["l"].number }}', 'button{{ part["l"].number }}', 'available{{ part["l"].number }}', ['{{ part["l"].number }}'])">Add to Cart</button>
         </div>
       </div>
-
-      <script>
-        function onClick(el) {
-          const button = document.getElementById(el);
-          var clicks = 0;
-          clicks += 1
-          if(clicks > 0) {
-            button.removeAttribute("disabled");
-          }
-        }
-      </script>  
     {% endfor %}
   </div>
 {% endblock %}
