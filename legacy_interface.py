@@ -5,6 +5,7 @@ from sqlalchemy import Select
 from sqlalchemy import VARCHAR, FLOAT
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from itertools import chain
 
 class Base(DeclarativeBase):
     pass
@@ -43,11 +44,16 @@ def ask_legacy(query: Select):
     Run query against the legacy database.
     """
     with Session(ENGINE) as s:
-        return s.execute(query).scalars().all()
+        return s.execute(query).all()
 
 
 def debug_sql_query(query: Select):
+    # This just prints out the generated sql query. Text has been inserted because it's not supposed to be directly used.
     return f"DEBUG: [\n{query.compile(compile_kwargs={'literal_binds': True})}\n]"
+
+
+def post_scalars(data: list):
+    return list(chain.from_iterable(data))
 
 
 """
