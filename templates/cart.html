@@ -1,35 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head>
-<!-- Include your CSS and JavaScript here -->
-</head>
-<body>
+{% extends 'base.html' %}
 
-<div class="banner">
-    <h1>Shopping Cart</h1>
-    <button onclick="location.href='/store_front'">Continue Shopping</button>
-    <button onclick="location.href='/checkout'">Checkout</button>
-</div>
 
-<div id="container">
-{% for item in data %}
-  <div class="box">
-    <img src="{{ item.pictureURL }}" alt="Part Image">
-    <div>
-      <p>{{ item.description }}</p>
-      <p>Price: ${{ item.price }}</p>
-      <p>Weight: {{ item.weight }} lbs</p>
-      <p>Stock: {{ item.stock }}</p>
-    </div>
-    <!-- Lines for the quantity input and remove from cart button -->
-    <div class="cart-elements">
-      <label for="quantity">Quantity:</label>
-      <input class="quantity-input" type="number" min="1" value="1" placeholder="Enter Quantity">
-      <button class="remove-from-cart" onclick="location.href='/remove_from_cart/{{ item.number }}'">Remove from Cart</button>
-    </div>
+{% block content %}
+  <div id="container">
+    {% for item in items %}
+      <div class="box">
+        <img src="{{ item.pictureURL }}" alt="Part Image">
+        <div>
+          <p>{{ item.description }}</p>
+          <p>Price: ${{ item.price }}</p>
+          <p>Weight: {{ item.weight }} lbs</p>
+          <p>Stock: {{ item.stock }}</p>
+        </div>
+        <!-- Lines for the quantity input and remove from cart button -->
+        <div class="cart-elements">
+          <label style="margin-right:5px"for="quantity">Quantity:</label>
+          <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" max="10" placeholder="Enter #">
+          <button class="remove-from-cart" onclick="location.href='/remove_from_cart/{{ item.number }}'">Remove from Cart</button>
+        </div>
+      </div>
+    {% endfor %}
   </div>
-{% endfor %}
-</div>
-
-</body>
-</html>
+{% endblock %}
