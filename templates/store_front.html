@@ -22,11 +22,22 @@
         <!-- Lines for the quantity input and add to cart button -->
           <div class="cart-elements">
             <label for="quantity">Quantity:</label>
-            <input type="number" id="num{{ part['l'].number }}" class="Quantity" name="Quantity" min="1" max="{{ part['s'] }}" placeholder="Enter #" {{'disabled' if part['s'] == 0}} oninput="checkQuantity('num{{ part["l"].number }}', 'button{{ part["l"].number }}')">
+            <input type="number" id="num{{ part['l'].number }}" class="Quantity" name="Quantity" min="1" max="{{ part['s'] }}" placeholder="Enter #" {{'disabled' if part['s'] == 0}} oninput="checkQuantity('num{{ part["l"].number }}', 'button{{ part["l"].number }}')" onchange="onClick('button{{ part["l"].number }}');">
             <!--<button class="add-to-cart" id="button{{ part['l'].number }}" {{'disabled' if part['s'] == 0}} onclick="addToCart('num{{ part["l"].number }}', 'button{{ part["l"].number }}', 'available{{ part["l"].number }}')">Add to Cart</button>-->
-            <button class="add-to-cart" id="button{{ part['l'].number }}" {{'disabled' if part['s'] == 0}} onclick="addToCart('add_to_cart', 'num{{ part["l"].number }}', 'button{{ part["l"].number }}', 'available{{ part["l"].number }}', ['{{ part["l"].number }}'])">Add to Cart</button>
+            <button class="add-to-cart" id="button{{ part['l'].number }}" disabled onclick="addToCart('add_to_cart', 'num{{ part["l"].number }}', 'button{{ part["l"].number }}', 'available{{ part["l"].number }}', ['{{ part["l"].number }}'])">Add to Cart</button>
         </div>
       </div>
+
+      <script>
+        function onClick(el) {
+          const button = document.getElementById(el);
+          var clicks = 0;
+          clicks += 1
+          if(clicks > 0) {
+            button.removeAttribute("disabled");
+          }
+        }
+      </script>  
     {% endfor %}
   </div>
 {% endblock %}
