@@ -1,11 +1,10 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for
 from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_item_by_id
 from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
                                 order_items_from_order, legacy_from_order_item_id, order_from_id, inventory_from_id,
                                 inventory_update)
 from sqlalchemy import select
 
-import json
 
 app = Flask(__name__)
 app.secret_key = 'super secret key'
@@ -70,6 +69,7 @@ def perform_search(query):
 
     return s_res
 
+
 @app.route('/add_inventory')
 def add_inventory():
     data = get_data_with_inventory()
@@ -105,7 +105,7 @@ def increment_inventory(i_id, value):
     inventory = inventory_from_id(i_id)
     inventory_update(inventory.id, stock=value + inventory.stock)
     return "ok"
-    
+
 
 @app.route("/invoice/<order_id>")
 def load_invoice(order_id):
@@ -129,8 +129,7 @@ def get_data_with_inventory():
 
     # a legacy part, s is a number, which is the stock
     return [{"l": a, "s": inventory_from_legacy_id(a.number).stock} for a in all_data]
-    
-from flask import request, jsonify
+
 
 # further checks need to be done, right now duplicate items are allowed, we want to increment to amount instead
 @app.route('/add_to_cart/<item_id>', methods=['POST'])
@@ -140,6 +139,7 @@ def add_to_cart(item_id):
     session['cart'].append(item_id)
     session.modified = True
     return 'item successfully added to cart!!!'
+
 
 @app.route('/cart')
 def view_cart():
@@ -156,9 +156,9 @@ def view_cart():
     # Pass the items to the template
     return render_template('cart.html', items=items)
 
+
 @app.route('/clear_cart')
 def clear_cart():
     session.clear()
     return redirect(url_for('store_front'))
-
 
