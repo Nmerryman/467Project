@@ -1,4 +1,4 @@
-{% extends 'InventoryBase.html' %}
+{% extends 'Base.html' %}
 
 <!--Here we handle page specific scripts-->
 {% block js_scripts %}
@@ -6,13 +6,16 @@
   <script src="{{ url_for('static', filename='js/inventory_add.js') }}"></script>
 {% endblock %}
 
+
 {% block buttons %}
 <!-- for no buttons -->
 {% endblock %}
 
+
 {% block title %}
   <h1>Receiving Parts</h1>
 {% endblock %}
+
 
 {% block content %}
 <p></p>

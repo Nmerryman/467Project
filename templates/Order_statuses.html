@@ -1,15 +1,17 @@
-{% extends 'InventoryBase.html' %}
+{% extends 'Base.html' %}
+
 
 {% block title %}
 <h1>View order status</h1>
 {% endblock %}
 
+
 {% block js_scripts %}
 <script src="{{ url_for('static', filename='js/Order_page.js') }}"></script>
 {% endblock %}
 
-{% block content %}
 
+{% block content %}
 <div>
     {% for order in orders %}
         <div id="order_{{ order.id }}" class="order_entry" onclick="toggle_children('order_{{ order.id }}')">
@@ -54,6 +56,5 @@
         </script>
     {% endfor %}
 </div>
-
 {% endblock %}
 

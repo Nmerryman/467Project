@@ -1,8 +1,16 @@
-{% extends 'CartBase.html' %}
+{% extends 'Base.html' %}
+
 
 {% block js_scripts %}
 <script src="{{ url_for('static', filename='js/store_front.js') }}"></script>
 {% endblock %}
+
+
+{% block buttons %}
+    <button class="normbutton" style="margin-left: 1750px; font-size: 14px;" onclick="location.href='/store_front'">Continue Shopping</button>
+    <button class="normbutton" style="margin-left: 1625px" onclick="location.href='/clear_cart'">Checkout</button>
+{% endblock %}
+
 
 {% block content %}
   <div id="container">

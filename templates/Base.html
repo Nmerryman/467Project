@@ -8,14 +8,13 @@
     {% endblock %}
   </head>
 <body>
-
   <div class="banner">
     {% block buttons %}
-    <button class="normbutton" style="margin-left: 1750px; font-size: 14px;" onclick="location.href='/store_front'">Continue Shopping</button>
-    <button class="normbutton" style="margin-left: 1625px" onclick="location.href='/clear_cart'">Checkout</button>
+      <button style="margin-left: 1750px" class="invbutton" onclick="location.href='/orders'" id="button">Orders</button>
+      <button style="margin-left: 1625px" class="invbutton" onclick="location.href='/add_inventory'" id="button">Receiving</button>
     {% endblock %}
     {% block title %}
-    <h1>Car Parts Store</h1>
+    <h1>Receiving Parts</h1>
     {% endblock %}
   </div>
 
