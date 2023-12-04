@@ -33,7 +33,6 @@ def search_results():
     # Render the HTML template and pass the data to it
     return render_template('search_results.html', data=data)
 
-
 @app.route("/search")
 def search():
     # Get the search query from the request arguments
@@ -117,11 +116,9 @@ def load_invoice(order_id):
         sum_price += a.cost
     return render_template('invoice.html', order_items=items, order=order, sum_price=sum_price, round=round)
 
-
 @app.route("/shipping/<order_id>")
 def load_shipping(order_id):
     return render_template("shipping.html", order=order_from_id(order_id))
-
 
 def get_data_with_inventory():
     # Get all data with inventory
@@ -132,11 +129,23 @@ def get_data_with_inventory():
 
 
 # further checks need to be done, right now duplicate items are allowed, we want to increment to amount instead
-@app.route('/add_to_cart/<item_id>', methods=['POST'])
-def add_to_cart(item_id):
+@app.route('/add_to_cart/<item_id>/<quantity>', methods=['POST'])
+def add_to_cart(item_id, quantity):
     if 'cart' not in session:
         session['cart'] = []
-    session['cart'].append(item_id)
+    if 'total' not in session:
+        session['total'] = 0
+
+    for item in session['cart']:
+        if item['id'] == item_id:
+            item['quantity'] += int(quantity)
+            session['total'] += int(quantity)
+            session.modified = True
+            return 'item already added, added more quantity!!!'
+        
+    item = {'id': item_id, 'quantity': int(quantity)}
+    session['cart'].append(item)
+    session['total'] += int(quantity)
     session.modified = True
     return 'item successfully added to cart!!!'
 
@@ -145,13 +154,16 @@ def add_to_cart(item_id):
 def view_cart():
     # Get the item ids from the session
     item_ids = session.get('cart', [])
+    total = session.get('total', 0)
     items = []
     
-    for item_id in item_ids:
-        item = get_item_by_id(item_id)
-        items.append(item)
+    for item in item_ids:
+        legacy_item = get_item_by_id(item['id'])
+        item_details = {'number' : legacy_item.number, 'description': legacy_item.description, 'price': legacy_item.price, 'weight': legacy_item.weight, 'pictureURL': legacy_item.pictureURL, 'quantity': item['quantity']}
+        items.append(item_details)
 
     print(f"Items in cart: {items}")
+    print(f"Total items in cart: {total}")
 
     # Pass the items to the template
     return render_template('cart.html', items=items)
@@ -161,4 +173,11 @@ def view_cart():
 def clear_cart():
     session.clear()
     return redirect(url_for('store_front'))
+
+
+@app.route('/get_cart_total', methods=['POST'])
+def get_cart_total():
+    total = session.get('total', 0)
+    return str(total)
+
 
