@@ -6,7 +6,7 @@ from sqlalchemy import String, Integer, ForeignKey
 from typing import List, Optional
 from datetime import datetime
 
-from sqlalchemy import insert, select, update
+from sqlalchemy import insert, select, update, and_
 
 import legacy_interface
 from legacy_interface import LegacyParts, ask_legacy, post_scalars
@@ -266,6 +266,54 @@ def legacy_from_order_item_id(oi_id: int):
         query = select(Inventory.legacy_id).join(OrderItem).where(OrderItem.id == oi_id)
         leg_id = session.execute(query).scalar_one()
         return post_scalars(ask_legacy(select(LegacyParts).where(LegacyParts.number == leg_id)))[0]
+
+
+def evaluate_missing_costnweight():
+    # Update the weights/price values of each OrderItem if it's not set
+    with Session(ENGINE) as session:
+        # Update the price and weight of each order item if it's missing.
+        for a in session.execute(select(OrderItem).where(OrderItem.cost.is_(None))).scalars().all():
+            part_weight, part_price = post_scalars(
+                ask_legacy(select(LegacyParts.weight, LegacyParts.price).where(LegacyParts.number == a.item_id)))
+
+            a.cost = part_price * a.quantity
+            a.weight = part_weight * a.quantity
+
+        session.commit()
+
+    print(*full_table(OrderItem), sep="\n")
+
+
+def update_order_weight():
+    # Update all weights/prices for every Order + OrderItem in the db
+    # We do all at once because it's then we know it will always be correct
+    with Session(ENGINE) as session:
+        for a in session.execute(select(Order)).scalars():
+            sum_price = 0
+            sum_weight = 0
+            for b in session.execute(select(OrderItem).where(OrderItem.order_id == a.id)).scalars():
+                part_price, part_weight = post_scalars(
+                    ask_legacy(select(LegacyParts.price, LegacyParts.weight).where(LegacyParts.number == b.item_id)))
+                b.cost = part_price * b.quantity
+                b.weight = part_weight * b.quantity
+                sum_price += part_price * b.quantity
+                sum_weight += part_weight * b.quantity
+                # print(b)
+
+            a.total_cost = sum_price
+            a.total_weight = sum_weight
+
+            fee = session.execute(
+                select(Fees).where(and_(Fees.min_weight <= sum_weight, Fees.max_weight > sum_weight))).scalar()
+            if fee:
+                # print(fee)
+                a.fee_id = fee.id
+                a.total_cost_post_fee = a.total_cost + fee.weight_m * a.total_weight + fee.weight_b
+            else:
+                print("No fee found for order", a.id)
+            print(a)
+
+        session.commit()
 
 
 def main():
