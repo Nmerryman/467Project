@@ -32,13 +32,14 @@ function checkQuantity(quantity_id, button_id)
   console.log("button_id: ", add_to_cart_button);
 }
 
-function updateCartTotal(cart_total)
+// this needs to be overhauled
+/*function updateCartTotal(cart_total)
 {
   const cartButton = document.getElementById('cartButton');
   cartButton.innerText = 'Cart (' + cart_total + ')';
 
   console.log('Cart successfully updated with: ', cart_total);
-}
+}*/
 
 //USE THIS AS A TEMPLATE FOR UPDATING ELEMENTS ON STORE_FRONT!!!
 /*function addToCart(quantity_id, button_id, available_id)
@@ -83,20 +84,60 @@ function updateCartTotal(cart_total)
 // This needs to be changed, only handle the request for the session here.
 // Make separate functions that are called that edit other parts the other elements
 // the other elements also need to be saved in the session, particularly availability, and quantity so we can send it over to the cart page 
-function addToCart(call_name, quantity_id, button_id, available_id, argument, callback=() => {/* do nothing */}) {
-    var xhttp = new XMLHttpRequest;
+function addToCart(call_name, quantity_id, button_id, available_id, item_id, quantity_chosen, callback=() => {/* do nothing */}) {
+  const number = document.getElementById(quantity_id);  
+
+  let enteredQuantity;
+
+  if (number.value === '')
+  {
+    enteredQuantity = 0;
+  }
+  else 
+  {
+    enteredQuantity = parseInt(number.value);
+  }
+
+  cart_total += enteredQuantity;
+    
+  var xhttp = new XMLHttpRequest;
  
-    xhttp.open("POST", "/" + call_name + '/' + argument); 
+  xhttp.open("POST", "/" + call_name + '/' + item_id + '/' + quantity_chosen); 
 
-    console.log("POST", "/" + call_name + '/' + argument); 
+  console.log("POST", "/" + call_name + '/' + item_id + '/' + quantity_chosen); 
 
-    console.log('call_name:', call_name); // print call_name
-    console.log('argument[]:', argument); // print argument[]
+  console.log('call_name: ', call_name); // print call_name
+  console.log('item_id: ', item_id); // print item_id
+  console.log('quantity_chosen: ', quantity_chosen) // print quantity entered
 
-    xhttp.onload = function() {
-        console.log('Server response:', this.responseText);
+  xhttp.onload = function() {
+      console.log('Server response:', this.responseText);
+      updateCartTotal('get_cart_total');
 
-        callback();
-    };
-    xhttp.send();
+      callback();
+  };
+  xhttp.send();
 }
+
+//this updates both pages, cart and car parts store
+window.onload = function() {
+  updateCartTotal('get_cart_total');
+};
+
+function updateCartTotal(call_name)
+{
+  var xhttp = new XMLHttpRequest;
+
+  xhttp.open("POST", '/' + call_name);
+  const cartButton = document.getElementById('cartButton');
+
+  console.log('Successfully retrieved cart total!!!');
+
+  xhttp.onload = function() {
+    var cart_total = this.responseText;
+    cartButton.innerText = 'Cart (' + cart_total + ')';
+  }
+
+  xhttp.send();
+}
+
