@@ -22,7 +22,7 @@
             <label style="margin-right:5px"for="quantity">Quantity:</label>
             <input style="margin-right:5px" type="number" id="num{{ part['l'].number }}" class="Quantity" name="Quantity" min="1" max="{{ part['s'] }}" placeholder="Enter #" {{'disabled' if part['s'] == 0}} oninput="checkQuantity('num{{ part["l"].number }}', 'button{{ part["l"].number }}')">
             <!--<button class="add-to-cart" id="button{{ part['l'].number }}" {{'disabled' if part['s'] == 0}} onclick="addToCart('num{{ part["l"].number }}', 'button{{ part["l"].number }}', 'available{{ part["l"].number }}')">Add to Cart</button>-->
-            <button class="add-to-cart" id="button{{ part['l'].number }}" {{'disabled' if part['s'] == 0}} onclick="addToCart('add_to_cart', 'num{{ part["l"].number }}', 'button{{ part["l"].number }}', 'available{{ part["l"].number }}', ['{{ part["l"].number }}'])">Add to Cart</button>
+            <button class="add-to-cart" id="button{{ part['l'].number }}" {{'disabled' if part['s'] == 0}} onclick="addToCart('add_to_cart', 'num{{ part["l"].number }}', 'button{{ part["l"].number }}', 'available{{ part["l"].number }}', '{{ part["l"].number }}', document.getElementById('num{{ part["l"].number }}').value)">Add to Cart</button>
         </div>
       </div>
     {% endfor %}
