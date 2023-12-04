@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 
+{% block js_scripts %}
+<script src="{{ url_for('static', filename='js/store_front.js') }}"></script>
+{% endblock %}
 
 {% block content %}
   <div id="container">
@@ -10,12 +13,10 @@
           <p>{{ item.description }}</p>
           <p>Price: ${{ item.price }}</p>
           <p>Weight: {{ item.weight }} lbs</p>
-          <p>Stock: {{ item.stock }}</p>
+          <p>Quantity: {{ item.quantity }}</p>
         </div>
         <!-- Lines for the quantity input and remove from cart button -->
         <div class="cart-elements">
-          <label style="margin-right:5px"for="quantity">Quantity:</label>
-          <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" max="10" placeholder="Enter #">
           <button class="remove-from-cart" onclick="location.href='/remove_from_cart/{{ item.number }}'">Remove from Cart</button>
         </div>
       </div>
