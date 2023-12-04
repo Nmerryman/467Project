@@ -101,8 +101,9 @@ def update_order(val, status):
 
 @app.route("/api/add_inventory/<i_id>/<value>")
 def increment_inventory(i_id, value):
-    inventory = inventory_from_id(i_id)
-    inventory_update(inventory.id, stock=value + inventory.stock)
+    print(i_id, value)
+    inventory = inventory_from_legacy_id(i_id)
+    inventory_update(inventory.id, stock=int(value) + inventory.stock)
     return "ok"
 
 

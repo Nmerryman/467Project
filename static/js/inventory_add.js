@@ -10,3 +10,13 @@ function onClick(el) {
       button.removeAttribute("disabled");
     }
   }
+
+function handleUpdate(id1) {
+  let id_num = id1;
+  id_num = id_num.substring(3);
+  var num = parseInt(document.getElementById(id1).value);
+
+  console.log(num);
+
+  fetcher('api/add_inventory/' + id_num + '/' + num, 'dummy')
+}
