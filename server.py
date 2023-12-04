@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_item_by_id
+from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_item_by_id, smart_search
 from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
                                 order_items_from_order, legacy_from_order_item_id, order_from_id, inventory_from_id,
                                 inventory_update)
@@ -38,35 +38,15 @@ def search():
     # Get the search query from the request arguments
     query = request.args.get('arg0') # get key for search term to look up in query
 
-    s_res = perform_search(query)
+    s_res = smart_search(query)
 
-    # Print the search results to the console
     for item in s_res:
-        print(f'Part Number: {item.number}, Part Name: {item.description}, Stock: {item.stock}')
+        i_record = inventory_from_legacy_id(item.number)
+        if i_record is not None:
+            item.stock = i_record.stock
 
     # Render the HTML template and pass the search results to it
     return render_template('search_results.html', data=s_res)
-
-
-def perform_search(query):
-    # Get all data (replace this with your actual data fetching code)
-    all_data = post_scalars(ask_legacy(select(LegacyParts)))
-
-    # Filter the data based on the query
-    # searches for item in all all_data, and if the item is found within item.description, that item is
-    # added to the search results. lower() is to make it case insensitive.
-    s_res = list()
-    for item in all_data:
-        if query.lower() in item.description.lower():
-            s_res.append(item)
-
-    # Get inventory data for each search result
-    for item in s_res:
-        inventory_record = inventory_from_legacy_id(item.number)
-        if inventory_record is not None:
-            item.stock = inventory_record.stock
-
-    return s_res
 
 
 @app.route('/add_inventory')
@@ -80,7 +60,7 @@ def order_menu():
     return render_template('Order_statuses.html', orders=order_not_done(), order_items=all_order_items())
 
 
-# @app.route('/api/all_order_items')
+
 def all_order_items():
     res = {}
     for a in order_item_not_done():
@@ -116,9 +96,11 @@ def load_invoice(order_id):
         sum_price += a.cost
     return render_template('invoice.html', order_items=items, order=order, sum_price=sum_price, round=round)
 
+
 @app.route("/shipping/<order_id>")
 def load_shipping(order_id):
     return render_template("shipping.html", order=order_from_id(order_id))
+
 
 def get_data_with_inventory():
     # Get all data with inventory

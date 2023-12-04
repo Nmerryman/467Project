@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from sqlalchemy import Select
+from sqlalchemy import Select, select, or_
 from sqlalchemy import VARCHAR, FLOAT
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -65,25 +65,30 @@ legacy db in this file.
 
 def get_item_by_id(item_id):
     with Session(ENGINE) as session:
-        query = Select(LegacyParts).filter(LegacyParts.number == item_id)
+        query = select(LegacyParts).where(LegacyParts.number == item_id)
         result = session.execute(query)
         item = result.scalar_one()
         return item
 
+
+def smart_search(text):
+    with Session(ENGINE) as session:
+        query = select(LegacyParts).where(or_(LegacyParts.description.like(f"%{text}%"), LegacyParts.number.like(f"%{text}%")))
+        return session.execute(query).scalars().all()
 
 
 if __name__ == '__main__':
 
     # Basic connection works
     with Session(ENGINE) as session:
-        query = Select(LegacyParts)
-        res = session.execute(query)
+        test_query = Select(LegacyParts)
+        res = session.execute(test_query)
         count = 0
         for row in res.scalars().all():
             # print(row)
             count += 1
         print(type(res.scalars().all()))
-        print(type(query))
+        print(type(test_query))
         # print(type(res))
         # print(type(res.scalars().all()))
         print(f"First db found {count} parts.")
