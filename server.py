@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_item_by_id
 from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
-                                order_items_from_order, legacy_from_order_item_id, order_from_id)
+                                order_items_from_order, legacy_from_order_item_id, order_from_id, inventory_from_id,
+                                inventory_update)
 from sqlalchemy import select
 
 import json
@@ -94,10 +95,17 @@ def all_order_items():
 
 
 @app.route("/api/update_order/<val>/<status>")
-def update_inventory(val, status):
+def update_order(val, status):
     order_update(val, status=status)
     return "ok"
 
+
+@app.route("/api/add_inventory/<i_id>/<value>")
+def increment_inventory(i_id, value):
+    inventory = inventory_from_id(i_id)
+    inventory_update(inventory.id, stock=value + inventory.stock)
+    return "ok"
+    
 
 @app.route("/invoice/<order_id>")
 def load_invoice(order_id):
