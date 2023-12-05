@@ -1,8 +1,10 @@
 {% extends 'Base.html' %}
 
-
+{% block buttons %}
+    <button class="normbutton" style="margin-left: 1750px;" id="receivingButton" onclick="location.href='/add_inventory'">Receiving</button>
+{% endblock %}
 {% block title %}
-<h1>View order status</h1>
+<h1>Order Status</h1>
 {% endblock %}
 
 
