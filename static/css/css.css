@@ -14,7 +14,7 @@
     font-size: 17px;
 }
 
-.button {
+.normbutton {
     display: flex;
     box-sizing: border-box; /* to maintain box staying in same spot when font sizes are different */ 
     text-align: center;
