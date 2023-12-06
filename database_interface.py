@@ -6,7 +6,7 @@ from sqlalchemy import String, Integer, ForeignKey
 from typing import List, Optional
 from datetime import datetime
 
-from sqlalchemy import insert, select, update, and_, delete
+from sqlalchemy import insert, select, update, and_, delete, func
 
 import legacy_interface
 from legacy_interface import LegacyParts, ask_legacy, post_scalars
@@ -174,7 +174,15 @@ def order_not_done():
             # temp =
             res.append(a)
         return res
+    
+def order_all():
+    with Session(ENGINE) as session:
+        query = select(Order)
 
+        res = []
+        for a in session.execute(query).scalars().all():
+            res.append(a)
+        return res
 
 def order_item_new(order_id: int, item_id: int, quantity: int):
     with Session(ENGINE) as session:
@@ -335,6 +343,50 @@ def update_order_weight():
 
         session.commit()
 
+def search_orders_by_date(start_date_str, end_date_str):
+    start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+    with Session(ENGINE) as session:
+        orders = session.query(Order).filter(and_(Order.created >= start_date, Order.created <= end_date)).all()
+
+    return orders
+
+def search_orders_by_status(status):
+    with Session(ENGINE) as session:
+        orders = session.query(Order).filter(Order.status == status).all()
+
+    return orders
+
+def search_orders_by_cost(min_cost, max_cost):
+    # Create a new session
+    with Session(ENGINE) as session:
+        # Filter the orders based on the total cost range
+        orders = session.query(Order).filter(Order.total_cost >= min_cost, Order.total_cost <= max_cost).all()
+
+    return orders
+
+def search_orders(start_date_str=None, end_date_str=None, status=None, min_cost=None, max_cost=None):
+    with Session(ENGINE) as session:
+        query = session.query(Order)
+
+        if start_date_str and end_date_str:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+            query = query.where(and_(Order.created >= start_date, Order.created <= end_date))
+
+        if status:
+            status = status.replace('_', ' ')
+            query = query.where(func.lower(Order.status) == func.lower(status))
+
+        if min_cost and max_cost:
+            print("hit")
+            query = query.where(and_(Order.total_cost_post_fee >= min_cost, Order.total_cost_post_fee <= max_cost))
+
+        orders = query.all()
+
+    return orders
+
 
 def main():
     # gen_dev_customer()
@@ -348,8 +400,12 @@ def main():
     # print("---- Print it's joined customer object ----")
     # print(test_order.customer)
     print ("---- Legacy ID, stock ----")
-    print(inventory_from_legacy_id(1))
-
+    #print(inventory_from_legacy_id(1))
+    print(search_orders_by_date('2022-01-01', '2025-01-01'))
+    print('cost results:')
+    print(search_orders_by_cost(0, 10000))
+    print('Testing all search')
+    print(search_orders('2021-01-01', '2025-01-01', 'Shipped'))
 
 if __name__ == '__main__':
     main()

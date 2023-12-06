@@ -3,7 +3,8 @@ from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_legacy_i
 from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
                                 order_items_from_order, legacy_from_order_item_id, order_from_id, inventory_from_id,
                                 inventory_update, customer_new, order_new, order_item_new, fee_from_all, fee_delete,
-                                fee_new, update_order_weight, fee_from_weight)
+                                fee_new, update_order_weight, fee_from_weight, order_all, search_orders_by_date,
+                                search_orders)
 from cc_authorization import authorize_cc
 from sqlalchemy import select
 
@@ -287,4 +288,58 @@ def add_bracket():
 @app.route('/directory')
 def directory():
     return render_template('directory.html')
+
+
+@app.route('/api/load_orders')
+def load_orders():
+    return render_template("part_admin_orders.html", orders=order_all())
+
+
+def get_data_with_inventory():
+    # Get all data with inventory
+    all_data = post_scalars(ask_legacy(select(LegacyParts)))
+
+    # a legacy part, s is a number, which is the stock
+    return [{"l": a, "s": inventory_from_legacy_id(a.number).stock} for a in all_data]
+
+@app.route("/date_search", methods=['GET'])
+def date_search():
+    # Get the start and end dates from the request arguments
+    start_date_str = request.args.get('start_date')
+    end_date_str = request.args.get('end_date')
+
+    # Use the search_orders_by_date function to get the orders
+    orders = search_orders_by_date(start_date_str, end_date_str)
+
+    # Render the HTML template and pass the filtered orders to it
+    return render_template('search_results.html', orders=orders)
+
+@app.route("/record_search", methods=['GET'])
+def record_search():
+    # Get the parameters from the request arguments
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    status = request.args.get('status')
+    min_cost = request.args.get('min_cost')
+    max_cost = request.args.get('max_cost')
+
+    # If min_cost or max_cost is not provided or is an empty string, set them to None
+    min_cost = float(min_cost) if min_cost and min_cost != 'null' else None
+    max_cost = float(max_cost) if max_cost and max_cost != 'null' else None
+    # print(min_cost, max_cost)
+
+    # Use the search_orders function to get the orders
+    orders = search_orders(start_date, end_date, status, min_cost, max_cost)
+    print(orders)
+
+    temp = []
+    for a in orders:
+        a.invoice_html = load_invoice(a.id)
+        a.shipping_html = load_shipping(a.id)
+
+    # Render the HTML template and pass the filtered orders to it
+    return render_template('part_admin_orders.html', orders=orders)
+
+
+
 

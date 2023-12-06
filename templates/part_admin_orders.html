@@ -1,0 +1,27 @@
+{% for order in orders %}
+<div class="order">
+    <div class="box">
+        <p>ID: {{ order.id }}</p>
+        <p>({{ order.status }})</p>
+        <p>:    {{ order.finished.strftime('%Y-%m-%d') if order.status == 'Shipped' else order.created.strftime('%Y-%m-%d') }} </p>
+        <p>:     ${{ "{:.2f}".format(order.total_cost_post_fee) }}</p>
+        <button onclick="openPopup({{ order.id }})">Details</button>
+        <div id="popup{{ order.id }}" class="popup-content" style="display: none;">
+            <!-- Add the details you want to display here -->
+
+            <h1>Order: {{ order.id }}, Status: {{ order.status }}</h1>
+            <p>Amount: ${{ "{:.2f}".format(order.total_cost) }}</p>
+            <p>Shipping: ${{ "{:.2f}".format(order.total_cost_post_fee - order.total_cost) }}</p>
+            <p>Total: ${{ "{:.2f}".format(order.total_cost_post_fee) }}</p>
+            <p></p>
+
+            <div id="invoice_details">{{ order.invoice_html | safe }}</div>
+            <div id="shipping_details">{{ order.shipping_html | safe }}</div>
+
+            <button onclick="closePopup({{ order.id }})" style="position: absolute; top: 0; right: 0;">X</button>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<h1>Orders Found: {{ orders|length }}</h1>
+

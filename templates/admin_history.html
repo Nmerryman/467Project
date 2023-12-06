@@ -1,0 +1,62 @@
+{% extends 'Base.html' %}
+
+{% block title %}
+    <h1>Admin Page</h1>
+    <h2>Order History</h2>
+{% endblock %}
+
+
+{% block js_scripts %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script src="{{ url_for('static', filename='js/admin_history.js') }}"></script>
+{% endblock %}
+
+
+{% block buttons %}
+    <button class="normbutton" style="margin-left: 1750px; font-size: 14px;" onclick="location.href='/admin'">Back to Admin Page</button>
+{% endblock %}
+
+
+{% block content %}
+<h1>List of Orders</h1>
+<h2>Select a filter:</h2>
+<form id="search-form" onsubmit="event.preventDefault(); fetch_search('record_search', 'container');" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+    <div style="flex: 1;">
+        <h3>Date Range:</h3>
+        <p>From: <input type="text" id="start_date"></p>
+        <p>To: <input type="text" id="end_date"></p>
+    </div>
+
+    <div style="flex: 1;">
+        <h3>Status:</h3>
+        <select id="status">
+            <option value="">--Select Status--</option>
+            <option value="in_queue">In Queue</option>
+            <option value="in_progress">In Progress</option>
+            <option value="shipped">Shipped</option>
+        </select>
+    </div>
+
+    <div style="flex: 1;">
+        <h3>Cost Range:</h3>
+        <p>From: <input type="number" id="min_cost" min="0" step="0.01"></p>
+        <p>To: <input type="number" id="max_cost" min="0" step="0.01"></p>
+    </div>
+
+    <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+        <input type="submit" value="Search">
+    </div>
+</form>
+
+<div id="container">
+    <div class="box">
+        
+    </div>
+</div>
+<script>
+    fetch_search('record_search', 'container');
+</script>
+{% endblock %}
+
