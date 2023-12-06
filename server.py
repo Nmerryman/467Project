@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session, redirect, url_for
 from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_item_by_id, smart_search
 from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
                                 order_items_from_order, legacy_from_order_item_id, order_from_id, inventory_from_id,
-                                inventory_update)
+                                inventory_update, fee_from_all, fee_delete)
 from sqlalchemy import select
 
 
@@ -164,3 +164,26 @@ def get_cart_total():
     return str(total)
 
 
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
+
+
+@app.route('/admin/history')
+def admin_history():
+    return render_template('admin_history.html')
+
+@app.route('/admin/brackets')
+def admin_brackets():
+
+    return render_template('admin_brackets.html')
+
+@app.route('/api/load_brackets')
+def api_load_brackets():
+    return render_template("part_admin_brackets.html", items=fee_from_all())
+
+
+@app.route('/api/remove_bracket/<id>')
+def api_remove_bracket(id):
+    fee_delete(id)
+    return "ok"

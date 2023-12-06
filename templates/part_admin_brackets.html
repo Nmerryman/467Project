@@ -1,0 +1,20 @@
+
+{% for item in items %}
+
+<div class="item">
+    <table>
+        <tr>
+            <th>Description</th>
+            <th>Weight Range</th>
+            <th>Price Calculation</th>
+        </tr>
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.min_weight }} <= x < {{ item.max_weight }} lbs</td>
+            <td>y = {{ item.weight_m }} * x(lbs)+ {{ item.weight_b }}</td>
+    </table>
+    <button onclick="remove_bracket({{ item.id }})">Remove</button>
+
+</div>
+
+{% endfor %}

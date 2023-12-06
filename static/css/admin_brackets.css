@@ -1,0 +1,21 @@
+.item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    display: flex;
+}
+
+
+table {
+    border-collapse: collapse;
+}
+
+table td, th {
+    border-left: 1px solid #ddd;
+    width: 15em;
+}
+
+table td:first-child, th:first-child {
+    border-left: none;
+}
