@@ -2,18 +2,18 @@
 
 {% for part in data %}
   <div class="box">
-    <img src="{{ part.pictureURL }}" alt="Part Image">
+    <img src="{{ part['l'].pictureURL }}" alt="Part Image">
     <div>
-      <p>{{ part.description }}</p>
-      <p>Price: ${{ part.price }}</p>
-      <p>Weight: {{ part.weight }} lbs</p>
-      <p>available: {{ part.stock }}</p>
+      <p>{{ part['l'].description }}</p>
+      <p>Price: ${{ part['l'].price }}</p>
+      <p>Weight: {{ part['l'].weight }} lbs</p>
+      <p>available: {{ part['s'] }}</p>
     </div>
     <!-- Lines for the quantity input and add to cart button -->
     <div class="cart-elements">
-      <label style="margin-right:5px"for="quantity">Quantity:</label>
-      <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" max="{{ part['s'] }}" placeholder="Enter #" {{'disabled' if part.stock == 0}}>
-      <button class="add-to-cart" {{'disabled' if part.stock == 0}}>Add to Cart</button>
+      <label style="margin-right:5px"for="num{{ part['l'].number }}">Quantity:</label>
+      <input style="margin-right:5px" type="number" id="num{{ part['l'].number }}" name="Quantity" min="1" max="{{ part['s'] }}" placeholder="Enter #" {{'disabled' if part['s'] == 0}} onchange="onClick('button{{ part["l"].number }}');">
+      <button class="add-to-cart" id="button{{ part['l'].number }}" {{'disabled' if part['s'] == 0}} onclick="addToCart('add_to_cart', 'num{{ part["l"].number }}', 'button{{ part["l"].number }}', 'available{{ part["l"].number }}', '{{ part["l"].number }}', document.getElementById('num{{ part["l"].number }}').value)">Add to Cart</button>
     </div>
   </div>
 {% endfor %}

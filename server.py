@@ -12,6 +12,11 @@ app = Flask(__name__)
 app.secret_key = 'super secret key'
 
 
+@app.route("/")
+def default():
+    return store_front()
+
+
 @app.route("/store_front")
 def store_front():
     # get data from legacy database
@@ -22,19 +27,6 @@ def store_front():
     return render_template('store_front.html', data=data)
 
 
-@app.route("/")
-def default():
-    return store_front()
-
-
-@app.route("/search_results")
-def search_results():
-    # Get your data (replace this with your actual data fetching code)
-    data = ask_legacy(select(LegacyParts))
-
-    # Render the HTML template and pass the data to it
-    return render_template('search_results.html', data=data)
-
 @app.route("/search")
 def search():
     # Get the search query from the request arguments
@@ -42,19 +34,40 @@ def search():
 
     s_res = smart_search(query)
 
+    res = []
     for item in s_res:
-        i_record = inventory_from_legacy_id(item.number)
-        if i_record is not None:
-            item.stock = i_record.stock
+        temp = {'l': item, 's': inventory_from_legacy_id(item.number).stock}
+        res.append(temp)
 
     # Render the HTML template and pass the search results to it
-    return render_template('search_results.html', data=s_res)
+    return render_template('search_results.html', data=res)
 
 
 @app.route('/add_inventory')
 def add_inventory():
     data = get_data_with_inventory()
     return render_template('inventory_add.html', data=data)
+
+
+@app.route('/search_inventory')
+def search_inventory():
+    query = request.args.get('arg0')
+    s_res = smart_search(query)
+
+    res = []
+    for item in s_res:
+        temp = {'l': item, 's': inventory_from_legacy_id(item.number).stock}
+        res.append(temp)
+
+    return render_template('inventory_search.html', data=res)
+
+
+def get_data_with_inventory():
+    # Get all data with inventory
+    all_data = post_scalars(ask_legacy(select(LegacyParts)))
+
+    # a legacy part, s is a number, which is the stock
+    return [{"l": a, "s": inventory_from_legacy_id(a.number).stock} for a in all_data]
 
 
 @app.route('/orders')
@@ -69,9 +82,9 @@ def all_order_items():
         # Create if missing
         if not a.order_id in res:
             res[a.order_id] = list()
-        
+
         res[a.order_id].append({"name": a.legacy.description, "url": a.legacy.pictureURL, "count": a.quantity})
-        
+
     return res
 
 
@@ -103,14 +116,6 @@ def load_invoice(order_id):
 @app.route("/shipping/<order_id>")
 def load_shipping(order_id):
     return render_template("shipping.html", order=order_from_id(order_id))
-
-
-def get_data_with_inventory():
-    # Get all data with inventory
-    all_data = post_scalars(ask_legacy(select(LegacyParts)))
-
-    # a legacy part, s is a number, which is the stock
-    return [{"l": a, "s": inventory_from_legacy_id(a.number).stock} for a in all_data]
 
 
 # further checks need to be done, right now duplicate items are allowed, we want to increment to amount instead
