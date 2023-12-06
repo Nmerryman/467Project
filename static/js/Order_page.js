@@ -11,7 +11,6 @@ function toggle_children(order_id) {
         }
     }
     console.log("Folded: " + order_id);
-
 }
 
 function update_order_status(id, status) {

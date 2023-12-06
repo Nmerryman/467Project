@@ -130,3 +130,15 @@ body {
 /*.search-bar {
     margin-left: 10px;
 }*/
+
+.popup-content {
+    position: fixed;
+    width: 600px;
+    height: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f1f1f1;
+    border: 1px solid #888;
+    display: none;
+}

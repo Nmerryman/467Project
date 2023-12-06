@@ -1,4 +1,3 @@
-
 function load_brackets() {
     fetcher('api/load_brackets', 'container', [], () => {
         console.log('Page updated with brackets');
