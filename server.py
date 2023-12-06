@@ -3,7 +3,7 @@ from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_legacy_i
 from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
                                 order_items_from_order, legacy_from_order_item_id, order_from_id, inventory_from_id,
                                 inventory_update, customer_new, order_new, order_item_new, fee_from_all, fee_delete,
-                                fee_new, update_order_weight)
+                                fee_new, update_order_weight, fee_from_weight)
 from cc_authorization import authorize_cc
 from sqlalchemy import select
 
@@ -135,28 +135,61 @@ def add_to_cart(item_l_id, quantity):
     return 'item successfully added to cart!!!'
 
 
+@app.route('/remove_from_cart/<item_l_id>')
+def remove_from_cart(item_l_id):
+    cart = session.get('cart', [])
+    for item in cart:
+        if item['id'] == item_l_id:
+            cart.remove(item)
+            session['total'] -= item['quantity']
+            return "ok"
+
+
+
 @app.route('/cart')
 def view_cart():
     # Get the item ids from the session
-    item_ids = session.get('cart', [])
     total = session.get('total', 0)
-    items = []
     sum_price = 0
-    
-    for item in item_ids:
-        legacy_item = get_legacy_item_by_id(item['id'])
-        item_details = {'number' : legacy_item.number, 'description': legacy_item.description, 'price': legacy_item.price, 'weight': legacy_item.weight, 'pictureURL': legacy_item.pictureURL, 'quantity': item['quantity']}
-        sum_price += legacy_item.price * item['quantity']
-        items.append(item_details)
 
-    print(f"Items in cart: {items}")
-    print(f"Total items in cart: {total}")
+    # sum_price += legacy_item.price * item['quantity']
+
+    # print(f"Items in cart: {items}")
+    # print(f"Total items in cart: {total}")
 
     # TODO Add a fee from weight
 
     # Pass the items to the template
-    return render_template('cart.html', items=items, sum_price=sum_price)
+    return render_template('cart.html', sum_price=sum_price)
 
+
+@app.route('/get_cart_items')
+def get_cart_items():
+    item_ids = session.get('cart', [])
+    items = []
+
+    for item in item_ids:
+        legacy_item = get_legacy_item_by_id(item['id'])
+        item_details = {'number' : legacy_item.number, 'description': legacy_item.description, 'price': legacy_item.price, 'weight': legacy_item.weight, 'pictureURL': legacy_item.pictureURL, 'quantity': item['quantity']}
+        items.append(item_details)
+
+    return render_template('part_cart_item.html', items=items)
+
+
+@app.route('/get_cart_stats')
+def get_cart_stats():
+    sum_weight = 0
+    sum_price = 0
+    for item in session.get('cart', []):
+        legacy_item = get_legacy_item_by_id(item['id'])
+        sum_weight += legacy_item.weight * item['quantity']
+        sum_price += legacy_item.price * item['quantity']
+    fee = fee_from_weight(sum_weight)
+    sum_fee = fee.weight_m * sum_weight + fee.weight_b
+    sum_total = sum_price + sum_fee
+
+
+    return render_template('part_cart_stats.html', price=sum_price, weight=sum_weight, fees=sum_fee, total=sum_total, round=round)
 
 @app.route('/clear_cart')
 def clear_cart():
@@ -186,6 +219,10 @@ def checkout():
     cc_exp = request.args.get('arg8')
     cc_cvv = request.args.get('arg9')
     cc_zip = request.args.get('arg10')
+
+    # Make sure that there are items in the cart
+    if session.get('total', 0) <= 0:
+        return render_template('part_card_error.html', errors=["No items in cart"])
 
     # Authorize the card
     result = authorize_cc(cc_num, cc_name, cc_exp, session['total']).json()

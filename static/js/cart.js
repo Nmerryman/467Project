@@ -1,4 +1,14 @@
 
+function loadCart() {
+    fetcher('get_cart_items', 'container', [], () => {
+        loadCartStats();
+    });
+}
+
+function loadCartStats() {
+    fetcher('get_cart_stats', 'cartStats', [], () => {});
+}
+
 function tryCheckout() {
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
@@ -18,3 +28,16 @@ function tryCheckout() {
         console.log('Page updated with checkout results');
     })
 }
+
+function removeItem(item) {
+    fetcher('remove_from_cart/' + item, 'container', [], function() {
+        console.log('Page updated with cart results');
+        loadCart();
+    });
+}
+
+
+function calculateValues() {
+
+}
+

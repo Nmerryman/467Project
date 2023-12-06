@@ -254,6 +254,12 @@ def fee_from_id(f_id: int):
     return _from_id(Fees, f_id)
 
 
+def fee_from_weight(weight: float):
+    with Session(ENGINE) as session:
+        query = select(Fees).where(and_(Fees.min_weight <= weight, Fees.max_weight > weight))
+        return session.execute(query).scalar()
+
+
 def fee_from_all():
     with Session(ENGINE) as session:
         query = select(Fees)
