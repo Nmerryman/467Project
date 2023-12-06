@@ -2,12 +2,8 @@ from flask import Flask, render_template, request, session, redirect, url_for
 from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_item_by_id, smart_search
 from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
                                 order_items_from_order, legacy_from_order_item_id, order_from_id, inventory_from_id,
-<<<<<<< HEAD
                                 inventory_update, customer_new, order_new, order_item_new, fee_from_all, fee_delete)
 from cc_authorization import authorize_cc
-=======
-                                inventory_update, fee_from_all, fee_delete, fee_new)
->>>>>>> dbbf8a6 (progress)
 from sqlalchemy import select
 
 
@@ -240,3 +236,41 @@ def add_bracket():
     if all(res):
         fee_new(*res)
     return "ok"
+
+
+@app.route('/checkout')
+def checkout():
+    # This is just for testing. It holds the url for copy + paste
+    test_url = "http://127.0.0.1:5000/cart?name=Dude&email=Dude@email.com&streetAddress=123 street street&city=Cityish&state=North Virginia&zipCode=22222&cardNumber=6011 1234 4321 1234&cardName=Very real&cardExp=1&cardCVV=1&cardZip=1"
+
+    name = request.args.get('arg0')
+    email = request.args.get('arg1')
+    address = request.args.get('arg2')
+    city = request.args.get('arg3')
+    state = request.args.get('arg4')
+    zip_code = request.args.get('arg5')
+    cc_num = request.args.get('arg6')
+    cc_name = request.args.get('arg7')
+    cc_exp = request.args.get('arg8')
+    cc_cvv = request.args.get('arg9')
+    cc_zip = request.args.get('arg10')
+
+    # Authorize the card
+    result = authorize_cc(cc_num, cc_name, cc_exp, session['total']).json()
+    if "errors" in result:
+        return render_template('part_card_error.html', errors=result["errors"])
+
+    # We assume the card worked
+    customer = customer_new(name, email, address, f"{city}, {state} {zip_code}")
+    order = order_new(customer, "In Queue")
+    for item in session.get('cart', []):
+        legacy = get_item_by_id(item['id'])
+        order_item_new(order, legacy, item['quantity'])
+
+
+    print(session.items())
+    print(request.args)
+    # print([a for a in request.args.items()])
+    return str(result)
+
+
