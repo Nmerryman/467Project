@@ -97,6 +97,12 @@ function fetcher(call_name, target_id, callback=() => {/* do nothing */}) {
         console.log('Server response:', this.responseText);
         target.innerHTML = this.responseText;
 
+        document.getElementById('start_date').value = '';
+        document.getElementById('end_date').value = '';
+        document.getElementById('status').value = '';
+        document.getElementById('min_cost').value = '';
+        document.getElementById('max_cost').value = '';
+
         callback();
     };
     xhttp.send();

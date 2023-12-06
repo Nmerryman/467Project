@@ -10,7 +10,7 @@
             <!-- Add the details you want to display here -->
 
             <h1>Order: {{ order.id }}, Status: {{ order.status }}</h1>
-            <p>Amount: ${{ order.total_cost }}</p>
+            <p>Amount: ${{ "{:.2f}".format(order.total_cost) }}</p>
             <p>Shipping: ${{ "{:.2f}".format(order.total_cost_post_fee - order.total_cost) }}</p>
             <p>Total: ${{ "{:.2f}".format(order.total_cost_post_fee) }}</p>
             <p></p>
@@ -20,4 +20,5 @@
     </div>
 </div>
 {% endfor %}
+<h1>Orders Found: {{ orders|length }}</h1>
 
