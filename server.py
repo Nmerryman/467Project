@@ -277,3 +277,9 @@ def add_bracket():
     if all(res):
         fee_new(*res)
     return "ok"
+
+
+@app.route('/directory')
+def directory():
+    return render_template('directory.html')
+

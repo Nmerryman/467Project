@@ -18,5 +18,7 @@ function handleUpdate(id1) {
 
   console.log(num);
 
-  fetcher('api/add_inventory/' + id_num + '/' + num, 'dummy')
+  fetcher('api/add_inventory/' + id_num + '/' + num, 'dummy', [], () => {
+      window.location.reload();
+  })
 }

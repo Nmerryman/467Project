@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Directory</h1>
+    <ul>
+        <li><a href="{{ url_for('default') }}">Home</a></li>
+        <li><a href="{{ url_for('add_inventory') }}">Add Inventory</a></li>
+        <li><a href="{{ url_for('order_menu') }}">Orders Fulfillment</a></li>
+        <li><a href="{{ url_for('admin') }}">Admin</a></li>
+    </ul>
+{% endblock %}
