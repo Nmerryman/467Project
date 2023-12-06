@@ -11,9 +11,9 @@
     </div>
     <!-- Lines for the quantity input and add to cart button -->
     <div class="cart-elements">
-      <label style="margin-right:5px"for="quantity">Quantity:</label>
-      <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" max="{{ part['s'] }}" placeholder="Enter #" {{'disabled' if part.stock == 0}}>
-      <button class="add-to-cart" {{'disabled' if part.stock == 0}}>Add to Cart</button>
+      <label for="num{{ part.number }}">Quantity:</label>
+      <input style="margin-right:5px" type="number" id="Quantity" name="Quantity" min="1" max="{{ part.stock }}" placeholder="Enter #" {{'disabled' if part.stock == 0}}>
+      <button class="add-to-cart" id="button{{ part.number }}" {{'disabled' if part.stock == 0}} onclick="addToCart('add_to_cart', 'num{{ part.number }}', 'button{{ part.number }}', 'available{{ part.number }}', '{{ part.number }}', document.getElementById('num{{ part.number }}').value)">Add to Cart</button>
     </div>
   </div>
 {% endfor %}

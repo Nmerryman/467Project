@@ -3,25 +3,39 @@
 
 {% block js_scripts %}
 <script src="{{ url_for('static', filename='js/store_front.js') }}"></script>
+<script src="{{ url_for('static', filename='js/cart_submit.js') }}"></script>
 {% endblock %}
 
 
 {% block buttons %}
     <button class="normbutton" style="margin-left: 1750px; font-size: 14px;" onclick="location.href='/store_front'">Continue Shopping</button>
-    <button class="normbutton" style="margin-left: 1625px" onclick="location.href='/clear_cart'">Checkout</button>
+    <!--<button class="normbutton" style="margin-left: 1625px" onclick="location.href='/clear_cart'">Checkout</button>-->
+    <button data-confirm-target="#confirm-page" class="normbutton" style="margin-left: 1625px" onclick="handleCheckout()">Checkout</button>
+    <!--<button data-confirm-target="#confirm-page" class="normbutton" style="margin-left: 1625px">Checkout</button>-->
+
+    <div class="confirm-page" id="confirm-page">
+      <div class="confirm-header">
+        <div class="title">Order Completed!</div>
+        <button data-return-button class="return-button">&times;</button>
+      </div>
+      <div class="confirm-body">
+        Hello right now we do not do anything yet ;)
+      </div>
+    </div>
+    <div id="overlay"></div>
 {% endblock %}
 
 
 {% block content %}
   <div id="container">
     {% for item in items %}
-      <div class="box">
+    <div id="item{{ item.number }}" class="box">
         <img src="{{ item.pictureURL }}" alt="Part Image">
         <div>
-          <p>{{ item.description }}</p>
-          <p>Price: ${{ item.price }}</p>
-          <p>Weight: {{ item.weight }} lbs</p>
-          <p>Quantity: {{ item.quantity }}</p>
+          <p id="description{{ item.number }}">{{ item.description }}</p>
+          <p id="price{{ item.number }}">${{ item.price }}</p>
+          <p id="weight{{ item.number }}">{{ item.weight }} lbs</p>
+          <p id="quantity{{ item.number }}">Quantity: {{ item.quantity }}</p>
         </div>
         <!-- Lines for the quantity input and remove from cart button -->
         <div class="cart-elements">
@@ -29,5 +43,32 @@
         </div>
       </div>
     {% endfor %}
+    <div class="billing-info">
+      <h2>Billing Information</h2>
+      <label id="amountLabel" for="amount">Amount:</label>
+      <br>
+      <label id="weightLabel" for="weight">Weight: </label>
+      <br>
+      <label id="shipping">Shipping:</label> 
+      <br>
+      <label id="total">Total:</label>
+      <br><br>
+      <label for="name" >Name:</label>
+      <input type="text" id="name" name="name">
+      <br>
+      <label for="email">Email:</label>
+      <input type="text" id="email" email="email">
+      <br>
+      <label for="address">Address:</label>
+      <input type="text" id="address" address="address">
+      <br>
+      <label for="credit-card">CC:</label>
+      <input type="text" id="credit-card" credit-card="credit-card"> 
+      <br>
+      <label for="expiration">Exp:</label>
+      <input type="text" id="expiration" expiration="expiration">
+      <br>
+
+    </div>
   </div>
 {% endblock %}

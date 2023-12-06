@@ -145,10 +145,10 @@ def customer_update(cust_id: int, **kwargs):
         session.execute(query)
         session.commit()
 
-
-def order_new(cust_id: int, status: str, pricing_m_id: int, created: datetime, finished=None, calc_cost=0.0):
+# parameters that are optional in the ORDER table do not have to be set
+def order_new(cust_id: int, status: str, pricing_m_id: int, created: datetime, finished=None):
     with Session(ENGINE) as session:
-        order = Order(customer_id=cust_id, status=status, created=created, finished=finished, pricing_model_id=pricing_m_id, calculated_cost=calc_cost)
+        order = Order(customer_id=cust_id, status=status, created=created, finished=finished, fee_id=pricing_m_id)
         session.add(order)
         session.commit()
         return order.id
@@ -176,9 +176,9 @@ def order_not_done():
         return res
 
 
-def order_item_new(order_id: int, item_id: int, quantity: int, status: str, cost: float):
+def order_item_new(order_id: int, item_id: int, quantity: int, cost: float, weight: float):
     with Session(ENGINE) as session:
-        order_item = OrderItem(order_id=order_id, item_id=item_id, quantity=quantity, status=status, cost=cost)
+        order_item = OrderItem(order_id=order_id, item_id=item_id, quantity=quantity, cost=cost, weight=weight)
         session.add(order_item)
         session.commit()
         return order_item.id
@@ -283,6 +283,18 @@ def evaluate_missing_costnweight():
 
     print(*full_table(OrderItem), sep="\n")
 
+def calculate_shipping_cost(total_weight):
+    with Session(ENGINE) as session:
+        fee = session.query(Fees).filter(Fees.min_weight <= total_weight, Fees.max_weight > total_weight).first()
+
+        if fee is None:
+            return None
+
+        shipping_cost = fee.weight_m * total_weight + fee.weight_b
+
+        return shipping_cost
+
+
 
 def update_order_weight():
     # Update all weights/prices for every Order + OrderItem in the db
@@ -329,6 +341,12 @@ def main():
     # print(test_order.customer)
     print ("---- Legacy ID, stock ----")
     print(inventory_from_legacy_id(1))
+    print('shipping cost: ', calculate_shipping_cost(7))
+    # order_new(4, 'In Queue', 1, datetime.now(), None, 10.90, 154, 160)
+    order_new(1, 'In queue', 2, datetime.now()) #first call order new
+    #def order_item_new(order_id: int, item_id: int, quantity: int, cost: float, weight: float):
+    order_item_new(1, 1, 1, 0, 0) # then call this a bunch of times to add however many items to that order
+    update_order_weight() # then call the meaty function to update all the totals and such for the invoices
 
 
 if __name__ == '__main__':
