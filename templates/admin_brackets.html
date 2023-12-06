@@ -1,0 +1,28 @@
+{% extends 'Base.html' %}
+
+{% block title %}
+    <h1>Admin Page</h1>
+    <h2>Edit Brackets</h2>
+{% endblock %}
+
+
+{% block js_scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_brackets.css') }}">
+<script src="{{ url_for('static', filename='js/admin_brackets.js') }}"></script>
+{% endblock %}
+
+
+{% block buttons %}
+{% endblock %}
+
+
+{% block content %}
+<br>
+<div id="container">
+
+</div>
+<script>
+    load_brackets();
+</script>
+<div id="dummy" style="display: none"></div>
+{% endblock %}

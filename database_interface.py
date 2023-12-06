@@ -6,7 +6,7 @@ from sqlalchemy import String, Integer, ForeignKey
 from typing import List, Optional
 from datetime import datetime
 
-from sqlalchemy import insert, select, update, and_
+from sqlalchemy import insert, select, update, and_, delete
 
 import legacy_interface
 from legacy_interface import LegacyParts, ask_legacy, post_scalars
@@ -254,9 +254,22 @@ def fee_from_id(f_id: int):
     return _from_id(Fees, f_id)
 
 
+def fee_from_all():
+    with Session(ENGINE) as session:
+        query = select(Fees)
+        return session.execute(query).scalars().all()
+
+
 def fee_update(f_id: int, **kwargs):
     with Session(ENGINE) as session:
         query = update(Fees).where(Fees.id == f_id).values(**kwargs)
+        session.execute(query)
+        session.commit()
+
+
+def fee_delete(f_id: int):
+    with Session(ENGINE) as session:
+        query = delete(Fees).where(Fees.id == f_id)
         session.execute(query)
         session.commit()
 
