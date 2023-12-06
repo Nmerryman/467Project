@@ -2,7 +2,7 @@
     margin-bottom: 10px;
     padding: 10px;
     background-color: #fff;
-    border: 1px solid #ddd;
+    border: 1px solid #aaa;
     display: flex;
 }
 
@@ -12,7 +12,7 @@ table {
 }
 
 table td, th {
-    border-left: 1px solid #ddd;
+    border-left: 1px solid #aaa;
     width: 30em;
 }
 
