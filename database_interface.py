@@ -301,7 +301,7 @@ def update_order_weight():
     # Update all weights/prices for every Order + OrderItem in the db
     # We do all at once because it's then we know it will always be correct
     with Session(ENGINE) as session:
-        for a in session.execute(select(Order)).scalars():
+        for a in session.execute(select(Order).where(Order.status == "IN CART")).scalars():
             sum_price = 0
             sum_weight = 0
             for b in session.execute(select(OrderItem).where(OrderItem.order_id == a.id)).scalars():
@@ -315,6 +315,7 @@ def update_order_weight():
 
             a.total_cost = sum_price
             a.total_weight = sum_weight
+            a.status = "In Queue"
 
             fee = session.execute(
                 select(Fees).where(and_(Fees.min_weight <= sum_weight, Fees.max_weight > sum_weight))).scalar()
