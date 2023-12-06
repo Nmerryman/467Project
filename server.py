@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session, redirect, url_for
 from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_item_by_id, smart_search
 from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
                                 order_items_from_order, legacy_from_order_item_id, order_from_id, inventory_from_id,
-                                inventory_update, fee_from_all, fee_delete)
+                                inventory_update, fee_from_all, fee_delete, fee_new)
 from sqlalchemy import select
 
 
@@ -179,11 +179,18 @@ def admin_brackets():
     return render_template('admin_brackets.html')
 
 @app.route('/api/load_brackets')
-def api_load_brackets():
+def load_brackets():
     return render_template("part_admin_brackets.html", items=fee_from_all())
 
 
-@app.route('/api/remove_bracket/<id>')
-def api_remove_bracket(id):
-    fee_delete(id)
+@app.route('/api/remove_bracket/<f_id>')
+def remove_bracket(f_id):
+    fee_delete(f_id)
+    return "ok"
+
+@app.route('/api/add_bracket')
+def add_bracket():
+    res = [a for a in request.args.values()]
+    if all(res):
+        fee_new(*res)
     return "ok"

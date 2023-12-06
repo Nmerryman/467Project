@@ -13,7 +13,7 @@ table {
 
 table td, th {
     border-left: 1px solid #ddd;
-    width: 15em;
+    width: 30em;
 }
 
 table td:first-child, th:first-child {
