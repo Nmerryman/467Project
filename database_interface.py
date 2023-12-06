@@ -242,9 +242,9 @@ def inventory_update(i_id: int, **kwargs):
         session.commit()
 
 
-def fee_new(name: str, bracket_id: int, base_charge: float, weight_m: float, weight_b: float, min_w: float, max_w: float):
+def fee_new(name: str, weight_m: float, weight_b: float, min_w: float, max_w: float):
     with Session(ENGINE) as session:
-        fee = Fees(name=name, bracket_id=bracket_id, base_charge=base_charge, weight_m=weight_m, weight_b=weight_b, min_weight=min_w, max_weight=max_w)
+        fee = Fees(name=name, weight_m=weight_m, weight_b=weight_b, min_weight=min_w, max_weight=max_w)
         session.add(fee)
         session.commit()
         return fee.id

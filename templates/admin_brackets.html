@@ -18,6 +18,22 @@
 
 {% block content %}
 <br>
+<form action="javascript:add_bracket();">
+    <table>
+        <tr>
+            <th>Description</th>
+            <th>Weight Range</th>
+            <th>Price Calculation</th>
+        </tr>
+        <tr>
+            <td><input type="text" id="name" name="name" placeholder="Description"></td>
+            <td><input type="number" id="min_weight" name="min_weight" placeholder="Min Weight"> <= x < <input type="number" id="max_weight" name="max_weight" placeholder="Max Weight"> lbs</td>
+            <td>y = <input type="number" id="weight_m" name="weight_m" placeholder="m"> * x(lbs)+ <input type="number" id="weight_b" name="weight_b" placeholder="b"></td>
+            <td><input type="submit" value="Add Bracket"></td>
+        </tr>
+    </table>
+</form>
+<br>
 <div id="container">
 
 </div>
