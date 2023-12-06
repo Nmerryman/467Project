@@ -366,14 +366,15 @@ def search_orders(start_date_str=None, end_date_str=None, status=None, min_cost=
         if start_date_str and end_date_str:
             start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
             end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-            query = query.filter(and_(Order.created >= start_date, Order.created <= end_date))
+            query = query.where(and_(Order.created >= start_date, Order.created <= end_date))
 
         if status:
             status = status.replace('_', ' ')
-            query = query.filter(func.lower(Order.status) == func.lower(status))
+            query = query.where(func.lower(Order.status) == func.lower(status))
 
         if min_cost and max_cost:
-            query = query.filter(and_(Order.total_cost >= min_cost, Order.total_cost <= max_cost))
+            print("hit")
+            query = query.where(and_(Order.total_cost_post_fee >= min_cost, Order.total_cost_post_fee <= max_cost))
 
         orders = query.all()
 

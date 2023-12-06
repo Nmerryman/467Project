@@ -15,6 +15,9 @@
             <p>Total: ${{ "{:.2f}".format(order.total_cost_post_fee) }}</p>
             <p></p>
 
+            <div id="invoice_details">{{ order.invoice_html | safe }}</div>
+            <div id="shipping_details">{{ order.shipping_html | safe }}</div>
+
             <button onclick="closePopup({{ order.id }})" style="position: absolute; top: 0; right: 0;">X</button>
         </div>
     </div>

@@ -232,10 +232,16 @@ def record_search():
     # If min_cost or max_cost is not provided or is an empty string, set them to None
     min_cost = float(min_cost) if min_cost and min_cost != 'null' else None
     max_cost = float(max_cost) if max_cost and max_cost != 'null' else None
+    # print(min_cost, max_cost)
 
     # Use the search_orders function to get the orders
     orders = search_orders(start_date, end_date, status, min_cost, max_cost)
     print(orders)
+
+    temp = []
+    for a in orders:
+        a.invoice_html = load_invoice(a.id)
+        a.shipping_html = load_shipping(a.id)
 
     # Render the HTML template and pass the filtered orders to it
     return render_template('part_admin_orders.html', orders=orders)

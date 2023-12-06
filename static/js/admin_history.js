@@ -71,7 +71,7 @@ function date_search(start_date, end_date) {
         });
 }
 
-function fetcher(call_name, target_id, callback=() => {/* do nothing */}) {
+function fetch_search(call_name, target_id, callback=() => {/* do nothing */}) {
     var xhttp = new XMLHttpRequest;
     var arg_mod = ""
 
