@@ -146,9 +146,9 @@ def customer_update(cust_id: int, **kwargs):
         session.commit()
 
 
-def order_new(cust_id: int, status: str, pricing_m_id: int, created: datetime, finished=None, calc_cost=0.0):
+def order_new(cust_id: int, status: str, created: datetime = datetime.now()):
     with Session(ENGINE) as session:
-        order = Order(customer_id=cust_id, status=status, created=created, finished=finished, pricing_model_id=pricing_m_id, calculated_cost=calc_cost)
+        order = Order(customer_id=cust_id, status=status, created=created)
         session.add(order)
         session.commit()
         return order.id
@@ -176,9 +176,9 @@ def order_not_done():
         return res
 
 
-def order_item_new(order_id: int, item_id: int, quantity: int, status: str, cost: float):
+def order_item_new(order_id: int, item_id: int, quantity: int):
     with Session(ENGINE) as session:
-        order_item = OrderItem(order_id=order_id, item_id=item_id, quantity=quantity, status=status, cost=cost)
+        order_item = OrderItem(order_id=order_id, item_id=item_id, quantity=quantity)
         session.add(order_item)
         session.commit()
         return order_item.id

@@ -60,6 +60,8 @@ body {
     background-color: grey;
 }
 
+
+/* This stuff is all used in the order fullfilment page*/
 .order_entry {
     border: 1px solid black;
 }
@@ -125,6 +127,8 @@ body {
     border: 1px solid black;
     background: #3A7734;
 }
+
+
 
 
 /*.search-bar {
