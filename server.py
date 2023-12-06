@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_item_by_id, smart_search
+from legacy_interface import LegacyParts, ask_legacy, post_scalars, get_legacy_item_by_id, smart_search
 from database_interface import (inventory_from_legacy_id, order_not_done, order_item_not_done, order_update,
                                 order_items_from_order, legacy_from_order_item_id, order_from_id, inventory_from_id,
-                                inventory_update, fee_from_all, fee_delete, fee_new)
+                                inventory_update, customer_new, order_new, order_item_new, fee_from_all, fee_delete,
+                                fee_new, update_order_weight, fee_from_weight)
+from cc_authorization import authorize_cc
 from sqlalchemy import select
 
 
@@ -112,45 +114,82 @@ def get_data_with_inventory():
 
 
 # further checks need to be done, right now duplicate items are allowed, we want to increment to amount instead
-@app.route('/add_to_cart/<item_id>/<quantity>', methods=['POST'])
-def add_to_cart(item_id, quantity):
+@app.route('/add_to_cart/<item_l_id>/<quantity>', methods=['POST'])
+def add_to_cart(item_l_id, quantity):
     if 'cart' not in session:
         session['cart'] = []
     if 'total' not in session:
         session['total'] = 0
 
     for item in session['cart']:
-        if item['id'] == item_id:
+        if item['id'] == item_l_id:
             item['quantity'] += int(quantity)
             session['total'] += int(quantity)
             session.modified = True
             return 'item already added, added more quantity!!!'
         
-    item = {'id': item_id, 'quantity': int(quantity)}
+    item = {'id': item_l_id, 'quantity': int(quantity)}
     session['cart'].append(item)
     session['total'] += int(quantity)
     session.modified = True
     return 'item successfully added to cart!!!'
 
 
+@app.route('/remove_from_cart/<item_l_id>')
+def remove_from_cart(item_l_id):
+    cart = session.get('cart', [])
+    for item in cart:
+        if item['id'] == item_l_id:
+            cart.remove(item)
+            session['total'] -= item['quantity']
+            return "ok"
+
+
+
 @app.route('/cart')
 def view_cart():
     # Get the item ids from the session
-    item_ids = session.get('cart', [])
     total = session.get('total', 0)
+    sum_price = 0
+
+    # sum_price += legacy_item.price * item['quantity']
+
+    # print(f"Items in cart: {items}")
+    # print(f"Total items in cart: {total}")
+
+    # TODO Add a fee from weight
+
+    # Pass the items to the template
+    return render_template('cart.html', sum_price=sum_price)
+
+
+@app.route('/get_cart_items')
+def get_cart_items():
+    item_ids = session.get('cart', [])
     items = []
-    
+
     for item in item_ids:
-        legacy_item = get_item_by_id(item['id'])
+        legacy_item = get_legacy_item_by_id(item['id'])
         item_details = {'number' : legacy_item.number, 'description': legacy_item.description, 'price': legacy_item.price, 'weight': legacy_item.weight, 'pictureURL': legacy_item.pictureURL, 'quantity': item['quantity']}
         items.append(item_details)
 
-    print(f"Items in cart: {items}")
-    print(f"Total items in cart: {total}")
+    return render_template('part_cart_item.html', items=items)
 
-    # Pass the items to the template
-    return render_template('cart.html', items=items)
 
+@app.route('/get_cart_stats')
+def get_cart_stats():
+    sum_weight = 0
+    sum_price = 0
+    for item in session.get('cart', []):
+        legacy_item = get_legacy_item_by_id(item['id'])
+        sum_weight += legacy_item.weight * item['quantity']
+        sum_price += legacy_item.price * item['quantity']
+    fee = fee_from_weight(sum_weight)
+    sum_fee = fee.weight_m * sum_weight + fee.weight_b
+    sum_total = sum_price + sum_fee
+
+
+    return render_template('part_cart_stats.html', price=sum_price, weight=sum_weight, fees=sum_fee, total=sum_total, round=round)
 
 @app.route('/clear_cart')
 def clear_cart():
@@ -162,6 +201,50 @@ def clear_cart():
 def get_cart_total():
     total = session.get('total', 0)
     return str(total)
+
+
+@app.route('/checkout')
+def checkout():
+    # This is just for testing. It holds the url for copy + paste
+    test_url = "http://127.0.0.1:5000/cart?name=Dude&email=Dude@email.com&streetAddress=123 street street&city=Cityish&state=North Virginia&zipCode=22222&cardNumber=6011 1234 4321 1234&cardName=Very real&cardExp=1&cardCVV=1&cardZip=1"
+
+    name = request.args.get('arg0')
+    email = request.args.get('arg1')
+    address = request.args.get('arg2')
+    city = request.args.get('arg3')
+    state = request.args.get('arg4')
+    zip_code = request.args.get('arg5')
+    cc_num = request.args.get('arg6')
+    cc_name = request.args.get('arg7')
+    cc_exp = request.args.get('arg8')
+    cc_cvv = request.args.get('arg9')
+    cc_zip = request.args.get('arg10')
+
+    # Make sure that there are items in the cart
+    if session.get('total', 0) <= 0:
+        return render_template('part_card_error.html', errors=["No items in cart"])
+
+    # Authorize the card
+    result = authorize_cc(cc_num, cc_name, cc_exp, session['total']).json()
+    if "errors" in result:
+        return render_template('part_card_error.html', errors=result["errors"])
+
+    # We assume the card worked
+    customer = customer_new(name, email, address, f"{city}, {state} {zip_code}")
+    order_id = order_new(customer, "IN CART")
+    print(session.items())
+    print(request.args)
+    for item in session.get('cart', []):
+        inv = inventory_from_legacy_id(item['id'])
+        order_item_new(order_id, inv.id, item['quantity'])
+        inv.stock -= item['quantity']
+
+    update_order_weight()
+    session.clear()
+
+
+    # print([a for a in request.args.items()])
+    return render_template("thank_you.html", order_num=order_id, trans=result["trans"], order_id=result["_id"], name=name, email=email, street_address=address, city=city, state=state, zip_code=zip_code)
 
 
 @app.route('/admin')

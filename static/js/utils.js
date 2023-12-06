@@ -26,6 +26,10 @@ function fetcher(call_name, target_id, argument=[], callback=() => {/* do nothin
         console.log('Server response:', this.responseText);
         target.innerHTML = this.responseText;
 
+        for (a of target.getElementsByTagName("script")) {
+            eval(a.innerHTML);
+        }
+
         callback();
     };
     xhttp.send();

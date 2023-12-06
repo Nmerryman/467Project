@@ -1,0 +1,18 @@
+
+{% block content %}
+  <h1>Thank you for your order!</h1>
+  <h2>Your order number is {{ order_num }}</h2>
+  <h2>With a transaction id: {{ trans }}({{ order_id }})</h2>
+  <h2>Your order will be shipped to:</h2>
+  <div style="background: white">
+    <p>{{ name }}</p>
+    <p>{{ street_address }}</p>
+    <p>{{ city }}, {{ state }} {{ zip_code }}</p>
+    <p>{{ email }}</p>
+  </div>
+  <input type="button" value="Go Home", onclick="location.href='/'">
+  <script>
+    const element = document.getElementById("payment");
+    element.style.display = "none";
+  </script>
+{% endblock %}

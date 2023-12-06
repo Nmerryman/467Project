@@ -2,32 +2,58 @@
 
 
 {% block js_scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
 <script src="{{ url_for('static', filename='js/store_front.js') }}"></script>
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
 {% endblock %}
 
 
 {% block buttons %}
     <button class="normbutton" style="margin-left: 1750px; font-size: 14px;" onclick="location.href='/store_front'">Continue Shopping</button>
-    <button class="normbutton" style="margin-left: 1625px" onclick="location.href='/clear_cart'">Checkout</button>
+    <button class="normbutton" style="margin-left: 1625px" onclick="location.href='/clear_cart'">Clear Cart</button>
 {% endblock %}
 
 
 {% block content %}
   <div id="container">
-    {% for item in items %}
-      <div class="box">
-        <img src="{{ item.pictureURL }}" alt="Part Image">
-        <div>
-          <p>{{ item.description }}</p>
-          <p>Price: ${{ item.price }}</p>
-          <p>Weight: {{ item.weight }} lbs</p>
-          <p>Quantity: {{ item.quantity }}</p>
-        </div>
-        <!-- Lines for the quantity input and remove from cart button -->
-        <div class="cart-elements">
-          <button class="remove-from-cart" onclick="location.href='/remove_from_cart/{{ item.number }}'">Remove from Cart</button>
-        </div>
-      </div>
-    {% endfor %}
   </div>
+  <div id="cartStats">
+  </div>
+  <div id="payment">
+    <h2>Finalize Order</h2>
+    <form action="javascript:tryCheckout();">
+      <h3>Shipping</h3>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" placeholder="Name" required>
+      <label for="email">Email:</label>
+      <input type="text" id="email" name="email" placeholder="Email" required>
+      <label for="streetAddress">Street Address:</label>
+      <input type="text" id="streetAddress" name="streetAddress" placeholder="Street Address" required>
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city" placeholder="City" required>
+      <label for="state">State:</label>
+      <input type="text" id="state" name="state" placeholder="State" required>
+      <label for="zipCode">Zip Code:</label>
+      <input type="text" id="zipCode" name="zipCode" placeholder="Zip Code" required>
+      <br>
+
+
+      <h3>Billing</h3>
+      <label for="cardNumber">Card Number:</label>
+      <input type="text" id="cardNumber" name="cardNumber" placeholder="Card Number" required>
+      <label for="cardName">Name on Card:</label>
+      <input type="text" id="cardName" name="cardName" placeholder="Name on Card" required>
+      <label for="cardExp">Expiration Date:</label>
+      <input type="text" id="cardExp" name="cardExp" placeholder="MM/YYYY" required>
+      <label for="cardCVV">CVV:</label>
+      <input type="text" id="cardCVV" name="cardCVV" placeholder="CVV" required>
+      <label for="cardZip">Zip Code:</label>
+      <input type="text" id="cardZip" name="cardZip" placeholder="Zip Code" required>
+      <br>
+      <br>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+  <div id="payResult"></div>
+  <script>loadCart()</script>
 {% endblock %}

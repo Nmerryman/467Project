@@ -146,9 +146,9 @@ def customer_update(cust_id: int, **kwargs):
         session.commit()
 
 
-def order_new(cust_id: int, status: str, pricing_m_id: int, created: datetime, finished=None, calc_cost=0.0):
+def order_new(cust_id: int, status: str, created: datetime = datetime.now()):
     with Session(ENGINE) as session:
-        order = Order(customer_id=cust_id, status=status, created=created, finished=finished, pricing_model_id=pricing_m_id, calculated_cost=calc_cost)
+        order = Order(customer_id=cust_id, status=status, created=created)
         session.add(order)
         session.commit()
         return order.id
@@ -176,9 +176,9 @@ def order_not_done():
         return res
 
 
-def order_item_new(order_id: int, item_id: int, quantity: int, status: str, cost: float):
+def order_item_new(order_id: int, item_id: int, quantity: int):
     with Session(ENGINE) as session:
-        order_item = OrderItem(order_id=order_id, item_id=item_id, quantity=quantity, status=status, cost=cost)
+        order_item = OrderItem(order_id=order_id, item_id=item_id, quantity=quantity)
         session.add(order_item)
         session.commit()
         return order_item.id
@@ -254,6 +254,12 @@ def fee_from_id(f_id: int):
     return _from_id(Fees, f_id)
 
 
+def fee_from_weight(weight: float):
+    with Session(ENGINE) as session:
+        query = select(Fees).where(and_(Fees.min_weight <= weight, Fees.max_weight > weight))
+        return session.execute(query).scalar()
+
+
 def fee_from_all():
     with Session(ENGINE) as session:
         query = select(Fees)
@@ -301,7 +307,7 @@ def update_order_weight():
     # Update all weights/prices for every Order + OrderItem in the db
     # We do all at once because it's then we know it will always be correct
     with Session(ENGINE) as session:
-        for a in session.execute(select(Order)).scalars():
+        for a in session.execute(select(Order).where(Order.status == "IN CART")).scalars():
             sum_price = 0
             sum_weight = 0
             for b in session.execute(select(OrderItem).where(OrderItem.order_id == a.id)).scalars():
@@ -315,6 +321,7 @@ def update_order_weight():
 
             a.total_cost = sum_price
             a.total_weight = sum_weight
+            a.status = "In Queue"
 
             fee = session.execute(
                 select(Fees).where(and_(Fees.min_weight <= sum_weight, Fees.max_weight > sum_weight))).scalar()
